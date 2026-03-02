@@ -178,6 +178,6 @@ export interface TimelineSegment {
 
 export interface SourcedImageV2 {
   localPath: string;
-  source: "pexels" | "flux_ai_illustration" | "flux_ai_cinematic" | "diagram" | "text_card" | "none";
+  source: "flux_ai_illustration" | "flux_ai_cinematic" | "diagram" | "text_card" | "none";
   attribution?: string;
 }

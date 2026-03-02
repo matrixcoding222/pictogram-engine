@@ -552,7 +552,12 @@ export async function generateVideoV2(topic: string) {
     path.join(outputDir, "grid-cells"),
   );
   const gridSuccess = gridCellArt.filter((c) => c.source !== "none").length;
-  console.log(`  Done: ${gridSuccess}/${gridCellArt.length} grid cells generated\n`);
+  const gridFlux = gridCellArt.filter((c) => c.source === "flux_ai").length;
+  const gridFailed = gridCellArt.filter((c) => c.source === "none").length;
+  console.log(`  Done: ${gridSuccess}/${gridCellArt.length} grid cells generated`);
+  if (gridFlux > 0) console.log(`    🎨 FLUX AI: ${gridFlux}`);
+  if (gridFailed > 0) console.log(`    ❌ Placeholder: ${gridFailed}`);
+  console.log();
 
   // ═══════════════════════════════════════════════════════════════
   // STEP 3: Plan section scenes
@@ -602,7 +607,18 @@ export async function generateVideoV2(topic: string) {
     JSON.stringify(voiceResult.wordTimestamps, null, 2),
   );
   console.log(`  Voice: ${voiceResult.durationSeconds.toFixed(1)}s`);
-  console.log(`  Images: ${allImages.length} sourced\n`);
+  console.log(`  Images: ${allImages.length} sourced`);
+  // Diagnostic breakdown
+  const imgCounts: Record<string, number> = {};
+  for (const img of allImages) imgCounts[img.source] = (imgCounts[img.source] || 0) + 1;
+  for (const [source, count] of Object.entries(imgCounts)) {
+    const icon = source === "none" ? "❌" : source.includes("flux") ? "🎨" : source === "diagram" ? "📊" : "  ";
+    console.log(`    ${icon} ${source}: ${count}`);
+  }
+  if (imgCounts["none"] && imgCounts["none"] > 2) {
+    console.warn(`  ⚠️ ${imgCounts["none"]} scenes have no image — those frames will be black`);
+  }
+  console.log();
 
   // Redistribute images back to section map
   const sectionImages = new Map<number, SourcedImageV2[]>();

@@ -222,7 +222,7 @@ export async function sourceImagesForScenes(
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// V2 Image Pipeline — Multi-Type Routing
+// V2 Image Pipeline — ALL AI-Generated (No Stock Photos)
 // ═══════════════════════════════════════════════════════════════════
 
 // V2 images are 1.2x larger than viewport for Ken Burns camera headroom
@@ -240,8 +240,15 @@ async function processImageV2(imageBuffer: Buffer): Promise<Buffer> {
 }
 
 /**
- * Source images for v2 scenes with multi-type routing.
- * Each scene type maps to exactly one provider.
+ * Source images for v2 scenes — ALL AI-generated via FLUX or Claude diagrams.
+ * No stock photos. Every visual is custom-generated for the video.
+ *
+ * Routing:
+ *   real_photo       → FLUX photorealistic (realistic depiction of the subject)
+ *   ai_illustration  → FLUX illustration style (cartoon/concept art)
+ *   cinematic_ai     → FLUX cinematic (dramatic movie-quality)
+ *   diagram          → Claude SVG → rasterized PNG
+ *   text_card        → No image (rendered in Remotion)
  */
 export async function sourceImagesForScenesV2(
   scenes: ScenePlanV2[],
@@ -250,7 +257,7 @@ export async function sourceImagesForScenesV2(
   fs.mkdirSync(outputDir, { recursive: true });
   const results: SourcedImageV2[] = [];
 
-  console.log(`[image-pipeline-v2] Sourcing images for ${scenes.length} scenes`);
+  console.log(`[image-pipeline-v2] Generating images for ${scenes.length} scenes (all AI-generated)`);
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
@@ -259,16 +266,14 @@ export async function sourceImagesForScenesV2(
     try {
       switch (scene.scene_type) {
         case "real_photo": {
-          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: Pexels → "${scene.image_search_query}"`);
-          const photo = await searchPexels(scene.image_search_query);
-          if (photo) {
-            const raw = await downloadImage(photo.urlLarge2x || photo.url);
-            const processed = await processImageV2(raw);
-            fs.writeFileSync(outputPath, processed);
-            results.push({ localPath: outputPath, source: "pexels", attribution: `Photo by ${photo.photographer}` });
-          } else {
-            results.push({ localPath: "", source: "none" });
-          }
+          // "real_photo" = photorealistic AI image of the actual subject
+          // Uses the visual description (ai_image_prompt) NOT a search query
+          const prompt = scene.ai_image_prompt || scene.image_search_query || scene.narration_text.slice(0, 120);
+          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: FLUX photorealistic → "${prompt.slice(0, 60)}..."`);
+          const raw = await generateStyledAIImage(prompt, "cinematic");
+          const processed = await processImageV2(raw);
+          fs.writeFileSync(outputPath, processed);
+          results.push({ localPath: outputPath, source: "flux_ai_cinematic" });
           break;
         }
 
@@ -310,31 +315,27 @@ export async function sourceImagesForScenesV2(
           results.push({ localPath: "", source: "none" });
       }
     } catch (err) {
-      console.warn(`[image-pipeline-v2] Failed for scene ${scene.scene_id}: ${(err as Error).message}`);
-      // Fallback: try Pexels as last resort for any scene type
+      const errMsg = (err as Error).message;
+      console.error(`[image-pipeline-v2] ❌ FLUX failed for scene ${scene.scene_id}: ${errMsg}`);
+
+      // Retry once with a simplified prompt
       try {
-        const query = scene.image_search_query || scene.ai_image_prompt?.slice(0, 50) || scene.scene_id;
-        const photo = await searchPexels(query);
-        if (photo) {
-          const raw = await downloadImage(photo.urlLarge2x || photo.url);
-          const processed = await processImageV2(raw);
-          fs.writeFileSync(outputPath, processed);
-          results.push({ localPath: outputPath, source: "pexels" });
-          continue;
-        }
-      } catch { /* ignore fallback errors */ }
+        const retryPrompt = (scene.ai_image_prompt || scene.narration_text || "abstract dark background").slice(0, 80);
+        console.log(`[image-pipeline-v2]   Retrying with simpler prompt: "${retryPrompt}"`);
+        const raw = await generateStyledAIImage(retryPrompt, "illustration");
+        const processed = await processImageV2(raw);
+        fs.writeFileSync(outputPath, processed);
+        results.push({ localPath: outputPath, source: "flux_ai_illustration" });
+        continue;
+      } catch {
+        console.error(`[image-pipeline-v2]   Retry also failed — scene will have no image`);
+      }
       results.push({ localPath: "", source: "none" });
     }
   }
 
-  const counts = {
-    pexels: results.filter(r => r.source === "pexels").length,
-    illustration: results.filter(r => r.source === "flux_ai_illustration").length,
-    cinematic: results.filter(r => r.source === "flux_ai_cinematic").length,
-    diagram: results.filter(r => r.source === "diagram").length,
-    textCard: results.filter(r => r.source === "text_card").length,
-    none: results.filter(r => r.source === "none").length,
-  };
+  const counts: Record<string, number> = {};
+  for (const r of results) counts[r.source] = (counts[r.source] || 0) + 1;
   console.log(`[image-pipeline-v2] Complete: ${JSON.stringify(counts)}`);
 
   return results;

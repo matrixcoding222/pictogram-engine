@@ -446,32 +446,35 @@ const SECTION_SCENE_PLANNER_PROMPT = `You are a visual director for YouTube expl
 
 CONTEXT: Grid transitions, number cards, and section bridges are handled automatically. You are ONLY planning what appears DURING the explanation of this specific topic.
 
+IMPORTANT: ALL images are AI-generated using FLUX. There are NO stock photos. Every visual is custom-generated, so your ai_image_prompt must be detailed and descriptive for EVERY visual scene type.
+
 AVAILABLE SCENE TYPES:
 
-1. "real_photo" — Use for SPECIFIC, NAMED real-world things.
-   The viewer needs to SEE this actual thing. You provide a precise search query.
+1. "real_photo" — AI-generated PHOTOREALISTIC image of a specific real-world thing.
+   Use when the viewer needs to SEE a realistic depiction of a named thing.
    USE FOR: named locations, famous experiments, specific animals/species,
-   historical events, named structures, specific technology, named people/scientists.
-   SEARCH QUERY: Be EXTREMELY specific — "Hubble Space Telescope in orbit" not "telescope".
+   historical events, named structures, specific technology.
+   ai_image_prompt REQUIRED: Describe what the photo should look like (20-40 words).
+   Example: "Photorealistic aerial view of the Arecibo radio telescope in Puerto Rico, massive dish nestled in lush green hills, dramatic afternoon light"
 
-2. "ai_illustration" — Use for things that CANNOT be photographed.
-   Concepts, hypothetical scenarios, artistic visualizations.
+2. "ai_illustration" — AI-generated illustration/concept art style.
+   Use for things that CANNOT be photographed or benefit from artistic interpretation.
    USE FOR: theoretical concepts, microscopic/atomic scale, far future scenarios,
    artistic interpretations, "imagine this" moments, cutaway views.
-   DESCRIPTION: Describe the SCENE (20-40 words), include lighting and mood.
+   ai_image_prompt REQUIRED: Describe the SCENE (20-40 words), include lighting and mood.
 
-3. "cinematic_ai" — Use for dramatic "wow" moments.
-   Like ai_illustration but with cinematic/photorealistic style.
-   USE FOR: opening dramatic shot of a section, key visual climax.
-   DESCRIPTION: Describe as a movie shot (20-40 words).
+3. "cinematic_ai" — AI-generated dramatic cinematic shot.
+   Photorealistic but with dramatic movie-quality lighting and composition.
+   USE FOR: opening dramatic shot of a section, key visual climax, "wow" moments.
+   ai_image_prompt REQUIRED: Describe as a movie shot (20-40 words).
 
-4. "diagram" — Use for processes, comparisons, scale, timelines.
+4. "diagram" — Claude-generated SVG diagram, rasterized to PNG.
    An SVG diagram will be generated. Describe what it should show.
    USE FOR: step-by-step processes, size comparisons, timelines, statistics.
-   DESCRIPTION: What to SHOW + layout + what text labels are needed.
+   diagram_description REQUIRED: What to SHOW + layout + what text labels are needed.
 
-5. "text_card" — Use for dramatic statements, statistics, quotes.
-   Big bold text on screen. Maximum 12 words. Use sparingly (max 1 per section).
+5. "text_card" — Big bold text on screen. No image generated.
+   Maximum 12 words. Use sparingly (max 1 per section).
 
 CAMERA TYPES:
 - "zoom_in" — gentle push in (default)
@@ -488,19 +491,20 @@ OUTPUT FORMAT — return a JSON array:
     "scene_type": "real_photo|ai_illustration|diagram|text_card|cinematic_ai",
     "narration_text": "exact words spoken during this scene",
     "duration_estimate_seconds": 8,
-    "image_search_query": "specific Pexels search query (real_photo only, empty for others)",
-    "ai_image_prompt": "detailed visual description (ai_illustration/cinematic_ai only, empty for others)",
-    "diagram_description": "what the diagram should show (diagram only, empty for others)",
-    "text_card_content": "the text to display (text_card only, empty for others)",
+    "image_search_query": "brief keyword summary (used for logging only)",
+    "ai_image_prompt": "DETAILED visual description for FLUX image generation (REQUIRED for real_photo, ai_illustration, cinematic_ai)",
+    "diagram_description": "what the diagram should show (diagram only)",
+    "text_card_content": "the text to display (text_card only)",
     "camera": {"type": "zoom_in"},
     "mood": "mysterious|dramatic|wonder|tense|calm|exciting|triumphant|dark"
   }
 ]
 
 RULES:
-- Use real_photo for 40-50% of scenes
-- Use ai_illustration/cinematic_ai for 30-40%
+- Use real_photo for 30-40% of scenes (photorealistic AI images)
+- Use ai_illustration/cinematic_ai for 40-50% (stylized AI images)
 - Use diagram for 0-15%, text_card for 0-10%
+- ai_image_prompt is REQUIRED for real_photo, ai_illustration, and cinematic_ai — it drives image generation
 - EVERY word of narration must be assigned to exactly one scene
 - Alternate camera types — never use the same camera twice in a row
 - Diagrams and text cards always use "static" camera
@@ -607,44 +611,89 @@ export async function planAllSections(
   for (const topic of script.subTopics) {
     console.log(`[scene-planner-v2] Planning section ${topic.index + 1}/${script.subTopics.length}: "${topic.name}"`);
 
-    const scenes = await planSectionScenes(
-      topic.narrationText,
-      topic.index,
-      topic.name,
-      minScenesPerSection,
-      maxScenesPerSection,
-    );
+    try {
+      const scenes = await planSectionScenes(
+        topic.narrationText,
+        topic.index,
+        topic.name,
+        minScenesPerSection,
+        maxScenesPerSection,
+      );
 
-    sectionPlans.set(topic.index, scenes);
-    console.log(`[scene-planner-v2]   → ${scenes.length} scenes planned`);
+      sectionPlans.set(topic.index, scenes);
+      console.log(`[scene-planner-v2]   → ${scenes.length} scenes planned`);
+    } catch (err) {
+      console.error(`[scene-planner-v2] ❌ Failed to plan section "${topic.name}": ${(err as Error).message}`);
+      // Create a single fallback scene covering the entire section narration
+      const fallback: ScenePlanV2 = {
+        scene_id: `s${topic.index}_0`,
+        scene_type: "cinematic_ai",
+        narration_text: topic.narrationText,
+        duration_estimate_seconds: Math.max(5, Math.ceil(topic.narrationText.split(/\s+/).length / 3)),
+        image_search_query: topic.name,
+        ai_image_prompt: `Dramatic cinematic visualization of ${topic.name}, dark moody lighting, volumetric fog, 8k quality`,
+        camera: { type: "pan_and_zoom" },
+        mood: "dramatic",
+      };
+      sectionPlans.set(topic.index, [fallback]);
+      console.log(`[scene-planner-v2]   → Using 1 fallback scene`);
+    }
   }
 
   // Also plan hook scenes
   if (script.hook) {
     console.log(`[scene-planner-v2] Planning hook scenes...`);
-    const hookScenes = await planSectionScenes(
-      script.hook,
-      -1,
-      "_hook",
-      1,
-      3,
-    );
-    sectionPlans.set(-1, hookScenes);
-    console.log(`[scene-planner-v2]   → ${hookScenes.length} hook scenes`);
+    try {
+      const hookScenes = await planSectionScenes(
+        script.hook,
+        -1,
+        "_hook",
+        1,
+        3,
+      );
+      sectionPlans.set(-1, hookScenes);
+      console.log(`[scene-planner-v2]   → ${hookScenes.length} hook scenes`);
+    } catch (err) {
+      console.error(`[scene-planner-v2] ❌ Hook planning failed: ${(err as Error).message}`);
+      sectionPlans.set(-1, [{
+        scene_id: "hook_0",
+        scene_type: "cinematic_ai",
+        narration_text: script.hook,
+        duration_estimate_seconds: Math.max(5, Math.ceil(script.hook.split(/\s+/).length / 3)),
+        image_search_query: "dramatic intro",
+        ai_image_prompt: "Dramatic dark cinematic opening shot, volumetric lighting, mysterious atmosphere, 8k",
+        camera: { type: "zoom_in_dramatic" },
+        mood: "dramatic",
+      }]);
+    }
   }
 
   // Plan outro scenes
   if (script.outro) {
     console.log(`[scene-planner-v2] Planning outro scenes...`);
-    const outroScenes = await planSectionScenes(
-      script.outro,
-      -2,
-      "_outro",
-      1,
-      2,
-    );
-    sectionPlans.set(-2, outroScenes);
-    console.log(`[scene-planner-v2]   → ${outroScenes.length} outro scenes`);
+    try {
+      const outroScenes = await planSectionScenes(
+        script.outro,
+        -2,
+        "_outro",
+        1,
+        2,
+      );
+      sectionPlans.set(-2, outroScenes);
+      console.log(`[scene-planner-v2]   → ${outroScenes.length} outro scenes`);
+    } catch (err) {
+      console.error(`[scene-planner-v2] ❌ Outro planning failed: ${(err as Error).message}`);
+      sectionPlans.set(-2, [{
+        scene_id: "outro_0",
+        scene_type: "cinematic_ai",
+        narration_text: script.outro,
+        duration_estimate_seconds: Math.max(5, Math.ceil(script.outro.split(/\s+/).length / 3)),
+        image_search_query: "outro",
+        ai_image_prompt: "Cinematic wide shot fading to dark, stars in background, contemplative mood, 8k",
+        camera: { type: "zoom_out" },
+        mood: "calm",
+      }]);
+    }
   }
 
   return sectionPlans;
