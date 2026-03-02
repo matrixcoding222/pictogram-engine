@@ -214,7 +214,7 @@ const SegmentRenderer: React.FC<{
       );
 
     default:
-      return <AbsoluteFill style={{ backgroundColor: "#000" }} />;
+      return <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }} />;
   }
 };
 
@@ -227,7 +227,7 @@ export const VideoCompositionV2: React.FC<VideoDataV2> = (props) => {
     : 900;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0a0a0a" }}>
+    <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
       {/* Segment layers */}
       {segments.map((segment, i) => (
         <Sequence

@@ -5,6 +5,11 @@ interface TextCardProps {
   content: string;
 }
 
+/**
+ * Whiteboard-style text card.
+ * Big bold dark text on white background, like marker on a whiteboard.
+ * Words appear one by one for emphasis.
+ */
 export const TextCard: React.FC<TextCardProps> = ({ content }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -27,7 +32,7 @@ export const TextCard: React.FC<TextCardProps> = ({ content }) => {
         left: 0,
         width: 1920,
         height: 1080,
-        background: "linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #0d1117 100%)",
+        backgroundColor: "#FFFFFF",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -46,13 +51,12 @@ export const TextCard: React.FC<TextCardProps> = ({ content }) => {
         }}
       >
         {words.map((word, i) => {
-          // Staggered word-by-word fade-in
           const delay = i * 3;
           const wordOpacity = interpolate(frame, [delay, delay + 8], [0, 1], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",
           });
-          const wordTranslate = interpolate(frame, [delay, delay + 8], [15, 0], {
+          const wordTranslate = interpolate(frame, [delay, delay + 8], [12, 0], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",
           });
@@ -61,13 +65,12 @@ export const TextCard: React.FC<TextCardProps> = ({ content }) => {
             <span
               key={i}
               style={{
-                fontSize: 64,
+                fontSize: 60,
                 fontFamily: "'Arial Black', Arial, sans-serif",
                 fontWeight: 900,
-                color: "#FFFFFF",
+                color: "#1a1a1a",
                 opacity: wordOpacity,
                 transform: `translateY(${wordTranslate}px)`,
-                textShadow: "0 2px 8px rgba(0,0,0,0.5)",
               }}
             >
               {word}

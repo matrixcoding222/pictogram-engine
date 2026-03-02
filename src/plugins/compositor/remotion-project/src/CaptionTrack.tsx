@@ -8,9 +8,9 @@ interface CaptionTrackProps {
 }
 
 /**
- * Persistent word-by-word caption overlay.
- * Groups words into lines of N, highlights the current word,
- * crossfades between line groups.
+ * Whiteboard-style caption track.
+ * Dark text on semi-transparent white pill, sits at bottom of white canvas.
+ * Current word is highlighted with accent color.
  */
 export const CaptionTrack: React.FC<CaptionTrackProps> = ({
   wordTimestamps,
@@ -30,7 +30,7 @@ export const CaptionTrack: React.FC<CaptionTrackProps> = ({
     groups.push(wordTimestamps.slice(i, i + wordsPerGroup));
   }
 
-  // Find which group is active based on current time
+  // Find active group
   let activeGroupIndex = -1;
   for (let g = 0; g < groups.length; g++) {
     const group = groups[g];
@@ -48,7 +48,6 @@ export const CaptionTrack: React.FC<CaptionTrackProps> = ({
   const groupStart = activeGroup[0].start;
   const groupEnd = activeGroup[activeGroup.length - 1].end;
 
-  // Fade in/out for the group
   const groupFadeIn = interpolate(
     currentTime,
     [groupStart - 0.1, groupStart],
@@ -63,13 +62,12 @@ export const CaptionTrack: React.FC<CaptionTrackProps> = ({
   );
   const groupOpacity = Math.min(groupFadeIn, groupFadeOut);
 
-  // Position styles
   const positionStyle: React.CSSProperties =
     position === "top_center"
       ? { top: 60, left: "50%", transform: "translateX(-50%)" }
       : position === "bottom_left"
-        ? { bottom: 80, left: 80 }
-        : { bottom: 80, left: "50%", transform: "translateX(-50%)" };
+        ? { bottom: 60, left: 80 }
+        : { bottom: 60, left: "50%", transform: "translateX(-50%)" };
 
   return (
     <div
@@ -80,20 +78,20 @@ export const CaptionTrack: React.FC<CaptionTrackProps> = ({
         zIndex: 100,
       }}
     >
-      {/* Background pill */}
+      {/* White pill background for whiteboard style */}
       <div
         style={{
-          backgroundColor: `rgba(0, 0, 0, ${backgroundOpacity})`,
+          backgroundColor: `rgba(255, 255, 255, ${backgroundOpacity})`,
           borderRadius: 12,
-          padding: "12px 28px",
+          padding: "10px 24px",
           display: "flex",
-          gap: 12,
+          gap: 10,
           alignItems: "center",
           justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
         }}
       >
         {activeGroup.map((wordData, i) => {
-          // Is this word currently being spoken?
           const isActive =
             currentTime >= wordData.start && currentTime <= wordData.end;
 
@@ -105,9 +103,6 @@ export const CaptionTrack: React.FC<CaptionTrackProps> = ({
                 fontFamily: "'Arial Black', Arial, sans-serif",
                 fontWeight: 900,
                 color: isActive ? highlightColor : baseColor,
-                textShadow: isActive
-                  ? `0 0 12px ${highlightColor}`
-                  : "0 2px 4px rgba(0,0,0,0.5)",
                 transition: "color 0.05s",
               }}
             >

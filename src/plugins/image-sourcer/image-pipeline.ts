@@ -5,7 +5,7 @@ import sharp from "sharp";
 import type { ScenePlan } from "../scene-planner/types.js";
 import type { ImageSourcingConfig, SourcedImage } from "./types.js";
 import type { ScenePlanV2, SourcedImageV2 } from "../../core/types-v2.js";
-import { searchPexels } from "./pexels.js";
+import { searchPexels } from "./pexels.js"; // Used by V1 pipeline (kept for backward compat)
 import { generateAIImage, generateStyledAIImage } from "./flux-ai.js";
 import { generateDiagram } from "./diagram-generator.js";
 

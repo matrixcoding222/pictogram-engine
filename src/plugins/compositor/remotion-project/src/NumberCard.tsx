@@ -9,6 +9,11 @@ interface NumberCardProps {
   glowColor: string;
 }
 
+/**
+ * Whiteboard-style number card.
+ * Big number + topic name on a clean white background.
+ * Looks like someone wrote the number on a whiteboard with a marker.
+ */
 export const NumberCard: React.FC<NumberCardProps> = ({
   number,
   topicName,
@@ -19,14 +24,14 @@ export const NumberCard: React.FC<NumberCardProps> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
-  // Number bounces in with spring
+  // Number bounces in
   const numberSpring = spring({
     frame,
     fps,
     config: { damping: 8, stiffness: 200, mass: 0.6 },
   });
 
-  // Topic name fades in slightly later
+  // Topic name slides up
   const nameOpacity = interpolate(frame, [15, 30], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -36,13 +41,11 @@ export const NumberCard: React.FC<NumberCardProps> = ({
     extrapolateRight: "clamp",
   });
 
-  // Glow pulse
-  const glowIntensity = interpolate(
-    frame,
-    [0, 20, 40, durationInFrames],
-    [0, 40, 25, 25],
-    { extrapolateRight: "clamp" },
-  );
+  // Subtle underline draws in
+  const lineWidth = interpolate(frame, [20, 40], [0, 400], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   // Exit fade
   const exitOpacity = interpolate(
@@ -60,7 +63,7 @@ export const NumberCard: React.FC<NumberCardProps> = ({
         left: 0,
         width: 1920,
         height: 1080,
-        backgroundColor,
+        backgroundColor, // white
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -71,31 +74,41 @@ export const NumberCard: React.FC<NumberCardProps> = ({
       {/* Number */}
       <div
         style={{
-          fontSize: 280,
+          fontSize: 260,
           fontFamily: "'Arial Black', 'Impact', Arial, sans-serif",
           fontWeight: 900,
-          color: numberColor,
+          color: numberColor, // dark
           transform: `scale(${numberSpring})`,
-          textShadow: `0 0 ${glowIntensity}px ${glowColor}, 0 0 ${glowIntensity * 2}px ${glowColor}`,
           lineHeight: 1,
         }}
       >
         #{number}
       </div>
 
+      {/* Accent underline */}
+      <div
+        style={{
+          width: lineWidth,
+          height: 6,
+          backgroundColor: glowColor, // accent orange
+          borderRadius: 3,
+          marginTop: 8,
+          marginBottom: 16,
+        }}
+      />
+
       {/* Topic name */}
       <div
         style={{
-          fontSize: 52,
+          fontSize: 48,
           fontFamily: "'Arial Black', Arial, sans-serif",
           fontWeight: 900,
-          color: numberColor,
+          color: "#444444",
           opacity: nameOpacity,
           transform: `translateY(${nameTranslate}px)`,
-          marginTop: 20,
           textAlign: "center",
           maxWidth: 1400,
-          letterSpacing: 2,
+          letterSpacing: 1,
           textTransform: "uppercase",
         }}
       >

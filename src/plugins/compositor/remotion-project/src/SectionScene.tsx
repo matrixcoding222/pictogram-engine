@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, Img, staticFile } from "remotion";
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring, Img, staticFile } from "remotion";
 import { TextCard } from "./TextCard";
 import type { CameraTypeV2 } from "./types";
 
@@ -11,68 +11,80 @@ interface SectionSceneProps {
 }
 
 /**
- * Ken Burns camera definitions.
- * Images are rendered 1.2x larger than viewport for pan headroom.
- * Each camera type maps to a CSS transform animation.
+ * Whiteboard-style section scene.
+ *
+ * Images are NEVER full-screen. They appear as framed cards on a white
+ * canvas — like illustrations pinned to a whiteboard. The white background
+ * is always visible around the image.
+ *
+ * Camera movements are subtle shifts/zooms on the card, not cinematic pans.
  */
-function getCameraTransform(
+
+/** Get subtle card animation based on camera type */
+function getCardAnimation(
   camera: CameraTypeV2,
-  progress: number, // 0..1 through the scene
-): { scale: number; translateX: number; translateY: number } {
-  // Base scale: image is 1.2x viewport, so default scale = 1 shows 1.2x
-  // We scale between ~0.85 (showing most of image) and 1.0 (showing viewport)
+  progress: number,
+): { scale: number; translateX: number; translateY: number; rotate: number } {
   switch (camera) {
     case "zoom_in":
       return {
-        scale: interpolate(progress, [0, 1], [0.88, 1.0]),
+        scale: interpolate(progress, [0, 1], [1.0, 1.04]),
         translateX: 0,
-        translateY: 0,
+        translateY: interpolate(progress, [0, 1], [0, -8]),
+        rotate: 0,
       };
     case "zoom_in_dramatic":
       return {
-        scale: interpolate(progress, [0, 1], [0.83, 1.05]),
+        scale: interpolate(progress, [0, 1], [0.95, 1.08]),
         translateX: 0,
-        translateY: interpolate(progress, [0, 1], [0, -20]),
+        translateY: interpolate(progress, [0, 1], [5, -12]),
+        rotate: 0,
       };
     case "zoom_out":
       return {
-        scale: interpolate(progress, [0, 1], [1.0, 0.88]),
+        scale: interpolate(progress, [0, 1], [1.06, 1.0]),
         translateX: 0,
         translateY: 0,
+        rotate: 0,
       };
     case "pan_left":
       return {
-        scale: 0.92,
-        translateX: interpolate(progress, [0, 1], [60, -60]),
+        scale: 1.02,
+        translateX: interpolate(progress, [0, 1], [20, -20]),
         translateY: 0,
+        rotate: interpolate(progress, [0, 1], [0.3, -0.3]),
       };
     case "pan_right":
       return {
-        scale: 0.92,
-        translateX: interpolate(progress, [0, 1], [-60, 60]),
+        scale: 1.02,
+        translateX: interpolate(progress, [0, 1], [-20, 20]),
         translateY: 0,
+        rotate: interpolate(progress, [0, 1], [-0.3, 0.3]),
       };
     case "pan_up":
       return {
-        scale: 0.92,
+        scale: 1.02,
         translateX: 0,
-        translateY: interpolate(progress, [0, 1], [40, -40]),
+        translateY: interpolate(progress, [0, 1], [15, -15]),
+        rotate: 0,
       };
     case "pan_down":
       return {
-        scale: 0.92,
+        scale: 1.02,
         translateX: 0,
-        translateY: interpolate(progress, [0, 1], [-40, 40]),
+        translateY: interpolate(progress, [0, 1], [-15, 15]),
+        rotate: 0,
       };
     case "pan_and_zoom":
       return {
-        scale: interpolate(progress, [0, 1], [0.88, 1.0]),
-        translateX: interpolate(progress, [0, 1], [-40, 40]),
-        translateY: interpolate(progress, [0, 1], [20, -20]),
+        scale: interpolate(progress, [0, 1], [1.0, 1.05]),
+        translateX: interpolate(progress, [0, 1], [-12, 12]),
+        translateY: interpolate(progress, [0, 1], [8, -8]),
+        rotate: 0,
       };
     case "static":
     default:
-      return { scale: 0.92, translateX: 0, translateY: 0 };
+      return { scale: 1.0, translateX: 0, translateY: 0, rotate: 0 };
   }
 }
 
@@ -83,70 +95,94 @@ export const SectionScene: React.FC<SectionSceneProps> = ({
   textCardContent,
 }) => {
   const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
 
-  // Text card type — render text overlay
+  // Text card type — render text overlay on white
   if (sceneType === "text_card" && textCardContent) {
     return <TextCard content={textCardContent} />;
   }
 
-  // Image-based scene types
-  const progress = durationInFrames > 1
-    ? frame / (durationInFrames - 1)
-    : 0;
-  const { scale, translateX, translateY } = getCameraTransform(camera, progress);
+  const progress = durationInFrames > 1 ? frame / (durationInFrames - 1) : 0;
+  const { scale, translateX, translateY, rotate } = getCardAnimation(camera, progress);
 
-  // Entrance fade
-  const fadeIn = interpolate(frame, [0, 12], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+  // Card entrance: spring pop-in
+  const entranceSpring = spring({
+    frame,
+    fps,
+    config: { damping: 12, stiffness: 120, mass: 0.8 },
   });
 
   // Exit fade
   const fadeOut = interpolate(
     frame,
-    [durationInFrames - 10, durationInFrames],
+    [durationInFrames - 8, durationInFrames],
     [1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
-  const opacity = Math.min(fadeIn, fadeOut);
+  // Shadow grows slightly over time for depth
+  const shadowBlur = interpolate(progress, [0, 1], [20, 28]);
+  const shadowOpacity = interpolate(progress, [0, 1], [0.15, 0.22]);
+
+  // Card dimensions — image takes up ~60% of the screen, never full bleed
+  // Diagrams are wider, illustrations are standard
+  const isDiagram = sceneType === "diagram";
+  const cardWidth = isDiagram ? 1300 : 1050;
+  const cardHeight = isDiagram ? 730 : 620;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0a0a0a", opacity }}>
-      {imageSrc ? (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-          }}
-        >
+    <AbsoluteFill
+      style={{
+        backgroundColor: "#FFFFFF",
+        opacity: fadeOut,
+      }}
+    >
+      {/* Centered image card */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: cardWidth,
+          height: cardHeight,
+          marginLeft: -cardWidth / 2,
+          marginTop: -cardHeight / 2,
+          transform: `scale(${entranceSpring * scale}) translate(${translateX}px, ${translateY}px) rotate(${rotate}deg)`,
+          transformOrigin: "center center",
+          borderRadius: 16,
+          overflow: "hidden",
+          boxShadow: `0 ${shadowBlur / 2}px ${shadowBlur}px rgba(0, 0, 0, ${shadowOpacity})`,
+          border: "3px solid #e0e0e0",
+        }}
+      >
+        {imageSrc ? (
           <Img
             src={staticFile(imageSrc)}
             style={{
-              // 1.2x larger than viewport for Ken Burns headroom
-              width: "120%",
-              height: "120%",
+              width: "100%",
+              height: "100%",
               objectFit: "cover",
-              transform: `scale(${scale}) translate(${translateX}px, ${translateY}px)`,
-              transformOrigin: "center center",
             }}
           />
-        </div>
-      ) : (
-        // Fallback: dark background for missing images
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#0d1117",
-          }}
-        />
-      )}
+        ) : (
+          // Missing image: light gray placeholder
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "#f5f5f5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#999",
+              fontSize: 28,
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
+            ◻
+          </div>
+        )}
+      </div>
     </AbsoluteFill>
   );
 };

@@ -5,27 +5,27 @@
   "grid": {
     "columns": 3,
     "cell_art_resolution": 1024,
-    "cell_art_prompt_suffix": "digital illustration, thick black outlines, simple flat shading, vibrant colors, centered composition, dark background, clean vector art style, no text, square format",
-    "cell_border_color": "#111111",
-    "cell_highlight_color": "#FFD700",
-    "background_color": "#0a0a0a"
+    "cell_art_prompt_suffix": "digital illustration, thick black outlines, simple flat shading, vibrant colors, centered composition, clean white background, cartoon style, clean vector art, no text, square format",
+    "cell_border_color": "#d0d0d0",
+    "cell_highlight_color": "#FF6B35",
+    "background_color": "#FFFFFF"
   },
 
   "number_card": {
     "duration_seconds": 2.0,
-    "background_color": "#000000",
-    "number_color": "#FFFFFF",
-    "glow_color": "#FFD700"
+    "background_color": "#FFFFFF",
+    "number_color": "#1a1a1a",
+    "glow_color": "#FF6B35"
   },
 
   "captions": {
     "enabled": true,
     "words_per_group": 4,
     "position": "bottom_center",
-    "font_size": 48,
-    "highlight_color": "#FFD700",
-    "base_color": "#FFFFFF",
-    "background_opacity": 0.6
+    "font_size": 44,
+    "highlight_color": "#FF6B35",
+    "base_color": "#333333",
+    "background_opacity": 0.85
   },
 
   "timing": {
@@ -39,8 +39,8 @@
     "min_scenes_per_section": 3,
     "max_scenes_per_section": 8,
     "image_style_suffixes": {
-      "ai_illustration": "digital illustration, detailed, vibrant colors, dramatic lighting, concept art style, high quality",
-      "cinematic_ai": "cinematic photorealistic, dramatic lighting, 8k, volumetric lighting, wide angle lens, movie still quality, epic scale"
+      "ai_illustration": "digital illustration, vibrant colors, cartoon style, thick outlines, educational style, clean white or light background, concept art",
+      "cinematic_ai": "detailed realistic illustration, educational style, vibrant colors, clean composition, soft lighting, white background elements"
     }
   },
 

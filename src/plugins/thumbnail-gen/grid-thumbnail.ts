@@ -52,7 +52,7 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
   body {
     width: 1280px;
     height: 720px;
-    background: #1a1a1a;
+    background: #FFFFFF;
     font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     display: flex;
     flex-direction: column;
@@ -85,14 +85,14 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 3px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    border: 4px solid #e0e0e0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   }
 
   .label {
-    color: #ccc;
+    color: #333333;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 700;
     text-align: center;
     max-width: 180px;
     overflow: hidden;
@@ -107,13 +107,12 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
   }
 
   .title-text {
-    color: #ffffff;
+    color: #1a1a1a;
     font-size: 38px;
-    font-weight: 800;
+    font-weight: 900;
     line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 1px;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
   }
 </style>
 </head>

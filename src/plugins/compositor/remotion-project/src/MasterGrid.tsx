@@ -12,13 +12,13 @@ interface MasterGridProps {
   highlightedCell?: number;
 }
 
-// Grid layout constants (1920x1080 canvas)
-const CELL_WIDTH = 520;
-const CELL_HEIGHT = 340;
-const CELL_GAP = 30;
-const IMAGE_HEIGHT = 260;
+// Grid layout constants (1920x1080 canvas) — whiteboard style
+const CELL_WIDTH = 500;
+const CELL_HEIGHT = 330;
+const CELL_GAP = 36;
+const IMAGE_HEIGHT = 250;
 const LABEL_HEIGHT = 60;
-const BADGE_SIZE = 48;
+const BADGE_SIZE = 44;
 
 /** Calculate grid origin to center it on the canvas. */
 export function getGridOrigin(itemCount: number, columns: number): { x: number; y: number } {
@@ -70,7 +70,7 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
         left: 0,
         width: 1920,
         height: 1080,
-        backgroundColor,
+        backgroundColor, // white from config
       }}
     >
       {cells.map((cell, i) => {
@@ -98,8 +98,7 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
         const isCompleted = completedSet.has(i);
         const isHighlighted = i === highlightedCell;
         const borderColor = isHighlighted ? cellHighlightColor : cellBorderColor;
-        const borderSize = isHighlighted ? 6 : 4;
-        // Countdown number: total - index
+        const borderSize = isHighlighted ? 5 : 3;
         const number = cells.length - i;
 
         return (
@@ -116,16 +115,19 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
               transformOrigin: "center center",
             }}
           >
-            {/* Image container */}
+            {/* Card shadow + image container */}
             <div
               style={{
                 width: CELL_WIDTH,
                 height: IMAGE_HEIGHT,
                 border: `${borderSize}px solid ${borderColor}`,
-                borderRadius: 8,
+                borderRadius: 14,
                 overflow: "hidden",
-                backgroundColor: "#1a1a1a",
+                backgroundColor: "#f8f8f8",
                 position: "relative",
+                boxShadow: isHighlighted
+                  ? `0 6px 20px rgba(0,0,0,0.15)`
+                  : `0 3px 12px rgba(0,0,0,0.08)`,
               }}
             >
               {cell.imageSrc ? (
@@ -135,7 +137,7 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    filter: isCompleted ? "brightness(0.6) saturate(0.7)" : "none",
+                    filter: isCompleted ? "brightness(0.7) saturate(0.5)" : "none",
                   }}
                 />
               ) : (
@@ -146,7 +148,7 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: "#666",
+                    color: "#999",
                     fontSize: 20,
                     fontFamily: "Arial, sans-serif",
                   }}
@@ -159,27 +161,28 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  top: 8,
-                  left: 8,
+                  top: 10,
+                  left: 10,
                   width: BADGE_SIZE,
                   height: BADGE_SIZE,
                   borderRadius: "50%",
-                  backgroundColor: isCompleted ? "#4CAF50" : "rgba(0,0,0,0.7)",
+                  backgroundColor: isCompleted ? "#4CAF50" : "#FFFFFF",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontFamily: "'Arial Black', Arial, sans-serif",
                   fontWeight: 900,
-                  fontSize: isCompleted ? 22 : 24,
-                  color: "#FFFFFF",
-                  border: `2px solid ${isCompleted ? "#66BB6A" : "rgba(255,255,255,0.3)"}`,
+                  fontSize: 20,
+                  color: isCompleted ? "#FFFFFF" : "#333333",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                  border: isCompleted ? "none" : "2px solid #e0e0e0",
                 }}
               >
                 {isCompleted ? "✓" : number}
               </div>
             </div>
 
-            {/* Label */}
+            {/* Label — dark text on white canvas */}
             <div
               style={{
                 width: CELL_WIDTH,
@@ -189,13 +192,12 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
                 justifyContent: "center",
                 fontFamily: "'Arial Black', 'Impact', Arial, sans-serif",
                 fontWeight: 900,
-                fontSize: 24,
-                color: isHighlighted ? cellHighlightColor : "#FFFFFF",
+                fontSize: 22,
+                color: isHighlighted ? cellHighlightColor : "#222222",
                 textAlign: "center",
-                letterSpacing: 1,
+                letterSpacing: 0.5,
                 lineHeight: 1.1,
                 padding: "4px 8px",
-                textShadow: "0 2px 4px rgba(0,0,0,0.5)",
               }}
             >
               {cell.topicName}
