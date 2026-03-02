@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Atom - central nucleus with 3 elliptical orbits and electrons, hand-drawn doodle style -->
+  <!-- Orbit 1 (horizontal ellipse) -->
+  <ellipse cx="100" cy="100" rx="82" ry="28" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" opacity="0.7"/>
+  <!-- Orbit 2 (rotated 60 degrees) -->
+  <ellipse cx="100" cy="100" rx="82" ry="28" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" opacity="0.7" transform="rotate(60 100 100)"/>
+  <!-- Orbit 3 (rotated -60 degrees) -->
+  <ellipse cx="100" cy="100" rx="82" ry="28" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" opacity="0.7" transform="rotate(-60 100 100)"/>
+  <!-- Central nucleus -->
+  <circle cx="100" cy="100" r="18" fill="#E8EAF6" stroke="black" stroke-width="5"/>
+  <!-- Nucleus inner detail (protons/neutrons cluster) -->
+  <circle cx="94" cy="96" r="6" fill="#CE93D8" stroke="black" stroke-width="2"/>
+  <circle cx="106" cy="96" r="6" fill="#EF9A9A" stroke="black" stroke-width="2"/>
+  <circle cx="100" cy="106" r="6" fill="#CE93D8" stroke="black" stroke-width="2"/>
+  <!-- Electron on orbit 1 (right side) -->
+  <circle cx="182" cy="100" r="8" fill="#42A5F5" stroke="black" stroke-width="3"/>
+  <!-- Electron glow -->
+  <circle cx="182" cy="100" r="12" fill="#42A5F5" opacity="0.2" stroke="none"/>
+  <!-- Electron on orbit 2 (upper-left) -->
+  <circle cx="59" cy="29" r="8" fill="#42A5F5" stroke="black" stroke-width="3" transform="rotate(0 100 100)"/>
+  <circle cx="59" cy="29" r="12" fill="#42A5F5" opacity="0.2" stroke="none"/>
+  <!-- Electron on orbit 3 (lower-left) -->
+  <circle cx="59" cy="171" r="8" fill="#42A5F5" stroke="black" stroke-width="3"/>
+  <circle cx="59" cy="171" r="12" fill="#42A5F5" opacity="0.2" stroke="none"/>
+</svg>

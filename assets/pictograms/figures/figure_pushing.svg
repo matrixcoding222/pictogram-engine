@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Figure Pushing — Leaning forward heavily, both arms extended, strain face -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head (leaning forward with effort) -->
+    <circle cx="120" cy="50" r="28" fill="white"/>
+    <!-- Eyes (squinted with strain) -->
+    <path d="M 108 44 L 118 44" stroke-width="4"/>
+    <path d="M 124 44 L 134 44" stroke-width="4"/>
+    <!-- Strain wrinkles between eyes -->
+    <path d="M 120 38 L 122 42" stroke-width="2"/>
+    <!-- Mouth (gritting teeth — horizontal line with vertical marks) -->
+    <path d="M 110 62 L 132 60" stroke-width="4"/>
+    <path d="M 115 59 L 115 64" stroke-width="2"/>
+    <path d="M 121 59 L 121 63" stroke-width="2"/>
+    <path d="M 127 58 L 127 63" stroke-width="2"/>
+    <!-- Neck (angled forward heavily) -->
+    <path d="M 118 78 Q 112 84 105 92"/>
+    <!-- Body (leaning forward at steep angle) -->
+    <path d="M 105 92 Q 96 118 88 144 Q 82 160 78 175"/>
+    <!-- Upper arm — extended forward pushing (top arm) -->
+    <path d="M 100 108 Q 124 102 148 96 Q 164 92 176 88"/>
+    <!-- Upper hand against surface -->
+    <circle cx="176" cy="88" r="6" fill="white"/>
+    <!-- Lower arm — extended forward pushing (bottom arm) -->
+    <path d="M 98 118 Q 122 114 148 108 Q 164 104 176 100"/>
+    <!-- Lower hand against surface -->
+    <circle cx="176" cy="100" r="6" fill="white"/>
+    <!-- Push surface (wall) -->
+    <path d="M 184 60 Q 185 100 184 140 Q 184 170 184 200" stroke-width="5" opacity="0.4"/>
+    <!-- Left leg — braced back for pushing -->
+    <path d="M 78 175 Q 60 200 42 230 Q 30 250 22 268"/>
+    <!-- Left foot (planted firmly) -->
+    <ellipse cx="17" cy="274" rx="14" ry="8" fill="white"/>
+    <!-- Right leg — forward brace -->
+    <path d="M 78 175 Q 88 200 96 230 Q 100 250 104 268"/>
+    <!-- Right foot -->
+    <ellipse cx="108" cy="274" rx="14" ry="8" fill="white"/>
+    <!-- Effort lines near arms -->
+    <path d="M 160 78 L 166 72" stroke-width="3" opacity="0.4"/>
+    <path d="M 158 114 L 164 118" stroke-width="3" opacity="0.4"/>
+  </g>
+</svg>

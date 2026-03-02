@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Magnifying glass - circle lens with thick handle, hand-drawn doodle style -->
+  <!-- Lens glass fill -->
+  <circle cx="82" cy="78" r="52" fill="#E3F2FD" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Inner lens reflection/highlight -->
+  <path d="M56 52 Q62 38 82 34 Q96 32 106 42"
+        fill="none" stroke="white" stroke-width="4" opacity="0.7" stroke-linecap="round"/>
+  <!-- Lens ring (thicker outer ring) -->
+  <circle cx="82" cy="78" r="52" fill="none" stroke="black" stroke-width="6" stroke-linecap="round"/>
+  <!-- Handle connector -->
+  <circle cx="118" cy="116" r="8" fill="#9E9E9E" stroke="black" stroke-width="4"/>
+  <!-- Handle -->
+  <path d="M124 122 L168 168 Q174 174 170 180 L166 184 Q160 188 154 182 L112 136"
+        fill="#8D6E63" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Handle grip lines -->
+  <line x1="142" y1="148" x2="148" y2="142" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+  <line x1="150" y1="156" x2="156" y2="150" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+  <line x1="158" y1="164" x2="164" y2="158" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+</svg>

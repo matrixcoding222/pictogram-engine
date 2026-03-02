@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1280px; height: 720px;
+    background: #1a1a1a;
+    font-family: 'Arial Black', Impact, sans-serif;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .title {
+    position: absolute; bottom: 30px;
+    font-size: 42px; color: white; font-weight: 900;
+    text-align: center; padding: 0 40px;
+    text-shadow: 3px 3px 8px rgba(0,0,0,0.9);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.1;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 12px;
+    padding: 30px 40px 100px 40px;
+    width: 100%; height: 100%;
+  }
+  .cell {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .circle {
+    width: 170px; height: 170px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.8);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  }
+  .circle img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .label {
+    color: white; font-size: 13px;
+    text-align: center; margin-top: 6px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    max-width: 180px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <div class="title" id="title">TITLE HERE</div>
+</body>
+</html>

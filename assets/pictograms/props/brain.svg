@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Brain - stylized with folds/sulci, hand-drawn doodle style -->
+  <!-- Brain outer shape with hand-drawn bumpy contour -->
+  <path d="M100 24 Q68 18 48 36 Q28 48 24 68 Q16 78 22 96 Q16 112 26 128 Q32 146 50 158 Q62 170 82 172 Q92 178 100 176 Q108 178 118 172 Q138 170 150 158 Q168 146 174 128 Q184 112 178 96 Q184 78 176 68 Q172 48 152 36 Q132 18 100 24 Z"
+        fill="#FCE4EC" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Central dividing line (interhemispheric fissure) -->
+  <path d="M100 28 Q96 52 98 76 Q100 96 102 112 Q104 136 100 172"
+        fill="none" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Left hemisphere folds (sulci) -->
+  <path d="M42 58 Q56 54 68 62 Q78 70 82 82"
+        fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M28 86 Q42 78 58 84 Q72 92 78 104"
+        fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M34 118 Q48 110 64 116 Q76 124 82 138"
+        fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M52 148 Q66 142 78 150 Q86 156 90 164"
+        fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right hemisphere folds (sulci) -->
+  <path d="M158 58 Q144 54 132 62 Q122 70 118 82"
+        fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M172 86 Q158 78 142 84 Q128 92 122 104"
+        fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M166 118 Q152 110 136 116 Q124 124 118 138"
+        fill="none" stroke="black" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M148 148 Q134 142 122 150 Q114 156 110 164"
+        fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Subtle highlight -->
+  <path d="M60 38 Q76 28 96 28" fill="none" stroke="white" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+</svg>

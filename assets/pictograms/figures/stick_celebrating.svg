@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Stick Celebrating — Arms raised high in victory, wide stance, big smile -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle cx="100" cy="45" r="28" fill="white"/>
+    <!-- Eyes (happy, squinted with joy) -->
+    <path d="M 82 38 Q 88 34 94 38" stroke-width="4" fill="none"/>
+    <path d="M 106 38 Q 112 34 118 38" stroke-width="4" fill="none"/>
+    <!-- Mouth (big wide triumphant smile) -->
+    <path d="M 80 54 Q 90 70 100 70 Q 110 70 120 54" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 100 73 Q 100 79 100 88"/>
+    <!-- Body -->
+    <path d="M 100 88 Q 101 110 100 132 Q 99 155 100 175"/>
+    <!-- Left arm — raised high above head (victory!) -->
+    <path d="M 100 104 Q 76 82 60 52 Q 52 36 46 20"/>
+    <!-- Left hand -->
+    <circle cx="46" cy="20" r="6" fill="white"/>
+    <!-- Right arm — raised high above head (victory!) -->
+    <path d="M 100 104 Q 124 82 140 52 Q 148 36 154 20"/>
+    <!-- Right hand -->
+    <circle cx="154" cy="20" r="6" fill="white"/>
+    <!-- Left leg — wide spread stance -->
+    <path d="M 100 175 Q 82 208 64 242 Q 55 258 48 274"/>
+    <!-- Left foot -->
+    <ellipse cx="44" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Right leg — wide spread stance -->
+    <path d="M 100 175 Q 118 208 136 242 Q 145 258 152 274"/>
+    <!-- Right foot -->
+    <ellipse cx="156" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Celebration sparkle lines - left -->
+    <path d="M 36 10 L 36 2" stroke-width="3"/>
+    <path d="M 30 18 L 22 12" stroke-width="3"/>
+    <path d="M 42 6 L 48 0" stroke-width="3"/>
+    <!-- Celebration sparkle lines - right -->
+    <path d="M 164 10 L 164 2" stroke-width="3"/>
+    <path d="M 158 6 L 152 0" stroke-width="3"/>
+    <path d="M 170 18 L 178 12" stroke-width="3"/>
+  </g>
+</svg>

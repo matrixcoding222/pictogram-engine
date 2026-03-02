@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Stick Standing — Neutral pose, arms relaxed at sides, neutral face -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle cx="100" cy="45" r="28" fill="white"/>
+    <!-- Eyes (neutral dots) -->
+    <circle cx="88" cy="40" r="4" fill="black" stroke="none"/>
+    <circle cx="112" cy="40" r="4" fill="black" stroke="none"/>
+    <!-- Mouth (neutral straight line) -->
+    <path d="M 87 58 Q 100 58 113 58" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 100 73 Q 101 79 100 88"/>
+    <!-- Body (slight wobble for hand-drawn feel) -->
+    <path d="M 100 88 Q 102 110 101 132 Q 99 155 100 175"/>
+    <!-- Left arm — relaxed at side -->
+    <path d="M 100 108 Q 86 128 74 150 Q 68 160 64 170"/>
+    <!-- Left hand -->
+    <circle cx="64" cy="170" r="6" fill="white"/>
+    <!-- Right arm — relaxed at side -->
+    <path d="M 100 108 Q 114 128 126 150 Q 132 160 136 170"/>
+    <!-- Right hand -->
+    <circle cx="136" cy="170" r="6" fill="white"/>
+    <!-- Left leg -->
+    <path d="M 100 175 Q 93 205 86 240 Q 82 258 79 274"/>
+    <!-- Left foot -->
+    <ellipse cx="75" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 100 175 Q 107 205 114 240 Q 118 258 121 274"/>
+    <!-- Right foot -->
+    <ellipse cx="125" cy="280" rx="13" ry="7" fill="white"/>
+  </g>
+</svg>

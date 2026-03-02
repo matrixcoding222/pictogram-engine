@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Circle - bold hand-drawn with slight irregularity, doodle style -->
+  <!-- Background fill circle -->
+  <circle cx="100" cy="100" r="76" fill="#FFFDE7" stroke="none"/>
+  <!-- Hand-drawn circle path with slight wobble (not perfectly geometric) -->
+  <path d="M100 22 Q142 18 164 42 Q186 68 182 100 Q184 136 160 160 Q134 184 100 180 Q64 184 40 160 Q16 134 20 100 Q16 66 40 42 Q64 18 100 22 Z"
+        fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Subtle inner highlight -->
+  <path d="M68 48 Q86 34 110 36"
+        fill="none" stroke="white" stroke-width="3" opacity="0.5" stroke-linecap="round"/>
+</svg>

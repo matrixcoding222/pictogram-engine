@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Checkmark - bold green tick, hand-drawn doodle style -->
+  <!-- Background glow -->
+  <circle cx="100" cy="100" r="70" fill="#E8F5E9" stroke="none"/>
+  <!-- Bold checkmark path with hand-drawn wobble -->
+  <path d="M32 104 Q44 102 58 114 Q70 126 80 142 Q86 152 90 148 Q98 132 116 108 Q134 82 152 60 Q162 48 170 40"
+        fill="none" stroke="#43A047" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

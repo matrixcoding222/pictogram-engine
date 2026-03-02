@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Exclamation mark - bold hand-drawn doodle style -->
+  <!-- Tapered vertical stroke (wider at top, narrower at bottom) -->
+  <path d="M92 28 L108 28 L104 118 L96 118 Z" fill="#FFCDD2" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Add slight hand-drawn wobble overlay -->
+  <path d="M93 30 Q99 26 107 30 L103 116 Q100 120 97 116 Z" fill="none" stroke="black" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Dot at bottom -->
+  <circle cx="100" cy="152" r="14" fill="#FFCDD2" stroke="black" stroke-width="5"/>
+  <!-- Inner highlight on dot -->
+  <circle cx="97" cy="149" r="4" fill="white" opacity="0.5" stroke="none"/>
+</svg>

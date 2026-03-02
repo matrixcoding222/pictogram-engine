@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Stick Falling — Tilted body at angle, arms/legs flailing, surprised face -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head (tilted at angle, falling) -->
+    <circle cx="130" cy="48" r="28" fill="white"/>
+    <!-- Eyes (wide surprised, falling) -->
+    <circle cx="122" cy="42" r="5" fill="black" stroke="none"/>
+    <circle cx="140" cy="40" r="5" fill="black" stroke="none"/>
+    <!-- Eye highlights -->
+    <circle cx="123" cy="41" r="1.5" fill="white" stroke="none"/>
+    <circle cx="141" cy="39" r="1.5" fill="white" stroke="none"/>
+    <!-- Eyebrows raised in alarm -->
+    <path d="M 115 32 Q 122 27 129 32" stroke-width="3" fill="none"/>
+    <path d="M 133 30 Q 140 25 147 30" stroke-width="3" fill="none"/>
+    <!-- Mouth (open O — surprised/alarmed) -->
+    <ellipse cx="131" cy="60" rx="8" ry="9" fill="black" stroke="none"/>
+    <!-- Neck (tilted diagonal) -->
+    <path d="M 125 75 Q 118 82 110 90"/>
+    <!-- Body (tilted/falling at diagonal angle) -->
+    <path d="M 110 90 Q 98 118 86 145 Q 78 162 72 178"/>
+    <!-- Left arm — flailing out to left -->
+    <path d="M 100 110 Q 72 96 48 85 Q 34 80 22 78"/>
+    <!-- Left hand -->
+    <circle cx="22" cy="78" r="6" fill="white"/>
+    <!-- Right arm — flailing out to upper right -->
+    <path d="M 100 110 Q 128 100 152 95 Q 166 92 178 88"/>
+    <!-- Right hand -->
+    <circle cx="178" cy="88" r="6" fill="white"/>
+    <!-- Left leg — kicking out to upper left -->
+    <path d="M 72 178 Q 54 196 38 218 Q 28 232 22 246"/>
+    <!-- Left foot -->
+    <ellipse cx="18" cy="252" rx="13" ry="7" fill="white" transform="rotate(-20 18 252)"/>
+    <!-- Right leg — flailing to lower right -->
+    <path d="M 72 178 Q 90 204 110 232 Q 124 250 136 264"/>
+    <!-- Right foot -->
+    <ellipse cx="140" cy="270" rx="13" ry="7" fill="white" transform="rotate(25 140 270)"/>
+    <!-- Fall motion lines -->
+    <path d="M 155 14 L 160 4" stroke-width="3" opacity="0.4"/>
+    <path d="M 165 20 L 172 10" stroke-width="3" opacity="0.4"/>
+    <path d="M 170 32 L 180 24" stroke-width="3" opacity="0.4"/>
+  </g>
+</svg>

@@ -1,0 +1,50 @@
+{
+  "channel_id": "science-mysteries-explained",
+  "channel_name": "Science Mysteries Explained",
+
+  "script": {
+    "model": "claude-sonnet-4-5-20250929",
+    "target_duration_minutes": 10,
+    "sub_topics_per_video": 5,
+    "words_per_minute": 150
+  },
+
+  "voice": {
+    "provider": "edge-tts",
+    "model_id": "edge",
+    "voice_id": "en-US-GuyNeural",
+    "language": "en-US",
+    "speed": 1.0,
+    "emotion": "neutral"
+  },
+
+  "visuals": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "scene_duration_range": [5, 15],
+    "background_color": "#FFFFFF",
+    "style": "paint_explainer"
+  },
+
+  "image_sourcing": {
+    "priority": ["pexels", "flux_ai"],
+    "flux_model": "black-forest-labs/flux-1.1-pro"
+  },
+
+  "music": {
+    "volume_during_narration": 0.08,
+    "volume_during_pause": 0.15,
+    "default_mood": "mysterious"
+  },
+
+  "thumbnail": {
+    "grid": "3x3",
+    "background": "#1a1a1a"
+  },
+
+  "upload": {
+    "category_id": "28",
+    "default_tags": ["science", "explained", "theory", "universe", "physics", "mysteries"]
+  }
+}

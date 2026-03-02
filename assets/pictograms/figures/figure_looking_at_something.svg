@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Figure Looking At Something — Hand visor gesture, curious focused face, looking right -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle cx="95" cy="45" r="28" fill="white"/>
+    <!-- Eyes (focused, looking right — positioned to the right side) -->
+    <circle cx="88" cy="38" r="4" fill="black" stroke="none"/>
+    <circle cx="106" cy="38" r="4" fill="black" stroke="none"/>
+    <!-- Focused/curious eyebrows (slightly furrowed) -->
+    <path d="M 82 29 Q 88 27 94 30" stroke-width="3" fill="none"/>
+    <path d="M 100 29 Q 106 27 112 30" stroke-width="3" fill="none"/>
+    <!-- Mouth (curious, slightly open) -->
+    <ellipse cx="97" cy="58" rx="5" ry="4" fill="black" stroke="none"/>
+    <!-- Neck -->
+    <path d="M 95 73 Q 96 79 96 88"/>
+    <!-- Body -->
+    <path d="M 96 88 Q 97 110 96 132 Q 95 155 96 175"/>
+    <!-- Left arm — relaxed at side -->
+    <path d="M 96 110 Q 80 128 68 150 Q 62 160 58 170"/>
+    <!-- Left hand -->
+    <circle cx="58" cy="170" r="6" fill="white"/>
+    <!-- Right arm — raised up, bent at elbow, hand at forehead visor -->
+    <path d="M 96 110 Q 112 104 122 92 Q 128 82 126 70 Q 124 60 120 50"/>
+    <!-- Right hand (visor above eyes) -->
+    <circle cx="120" cy="50" r="6" fill="white"/>
+    <!-- Visor palm flat line extending over eyes -->
+    <path d="M 114 44 L 134 40" stroke-width="5"/>
+    <!-- Left leg -->
+    <path d="M 96 175 Q 88 205 81 240 Q 77 258 74 274"/>
+    <!-- Left foot -->
+    <ellipse cx="70" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 96 175 Q 104 205 111 240 Q 115 258 118 274"/>
+    <!-- Right foot -->
+    <ellipse cx="122" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Gaze direction lines (looking right) -->
+    <path d="M 136 36 L 152 32" stroke-width="3" opacity="0.4"/>
+    <path d="M 136 42 L 155 40" stroke-width="3" opacity="0.4"/>
+    <path d="M 134 48 L 150 48" stroke-width="3" opacity="0.4"/>
+  </g>
+</svg>

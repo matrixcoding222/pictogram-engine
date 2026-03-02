@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Stick Shrugging — Both arms raised outward/up "I don't know", confused squiggly mouth -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Head -->
+    <circle cx="100" cy="45" r="28" fill="white"/>
+    <!-- Eyes (confused, slightly wide) -->
+    <circle cx="88" cy="40" r="4" fill="black" stroke="none"/>
+    <circle cx="112" cy="40" r="4" fill="black" stroke="none"/>
+    <!-- Eyebrows raised in confusion -->
+    <path d="M 80 28 Q 88 23 96 28" stroke-width="3" fill="none"/>
+    <path d="M 104 28 Q 112 23 120 28" stroke-width="3" fill="none"/>
+    <!-- Mouth (confused squiggly wave) -->
+    <path d="M 84 58 Q 89 53 95 58 Q 101 63 107 58 Q 113 53 118 58" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 100 73 Q 100 79 100 88"/>
+    <!-- Body -->
+    <path d="M 100 88 Q 101 110 100 132 Q 99 155 100 175"/>
+    <!-- Left arm — raised outward and up in shrug -->
+    <path d="M 100 106 Q 74 94 54 78 Q 44 68 36 58"/>
+    <!-- Left hand (palm up gesture) -->
+    <circle cx="36" cy="58" r="6" fill="white"/>
+    <!-- Left palm-up line -->
+    <path d="M 28 56 L 44 56" stroke-width="3"/>
+    <!-- Right arm — raised outward and up in shrug -->
+    <path d="M 100 106 Q 126 94 146 78 Q 156 68 164 58"/>
+    <!-- Right hand (palm up gesture) -->
+    <circle cx="164" cy="58" r="6" fill="white"/>
+    <!-- Right palm-up line -->
+    <path d="M 156 56 L 172 56" stroke-width="3"/>
+    <!-- Left leg -->
+    <path d="M 100 175 Q 93 205 86 240 Q 82 258 79 274"/>
+    <!-- Left foot -->
+    <ellipse cx="75" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 100 175 Q 107 205 114 240 Q 118 258 121 274"/>
+    <!-- Right foot -->
+    <ellipse cx="125" cy="280" rx="13" ry="7" fill="white"/>
+  </g>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Arrow left - thick bold with filled arrowhead, hand-drawn doodle style -->
+  <!-- Arrow shaft with slight wobble -->
+  <path d="M178 102 Q140 100 100 98 Q70 96 58 99"
+        fill="none" stroke="black" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Filled arrowhead -->
+  <path d="M66 62 L22 100 L66 138 Z"
+        fill="#424242" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Highlight on arrowhead -->
+  <path d="M58 78 L38 100 L58 120"
+        fill="none" stroke="#757575" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+</svg>

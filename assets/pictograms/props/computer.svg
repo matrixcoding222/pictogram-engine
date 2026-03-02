@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Computer - monitor + keyboard, hand-drawn doodle style -->
+  <!-- Monitor body -->
+  <rect x="28" y="14" width="144" height="102" rx="8" fill="#ECEFF1" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Screen -->
+  <rect x="38" y="24" width="124" height="78" rx="4" fill="#E3F2FD" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Screen glow / content hint -->
+  <path d="M44 30 L156 30 L156 96 L44 96 Z" fill="#BBDEFB" opacity="0.3" stroke="none"/>
+  <!-- Screen reflection -->
+  <path d="M44 30 L80 30 L44 58 Z" fill="white" opacity="0.2" stroke="none"/>
+  <!-- Power indicator dot -->
+  <circle cx="100" cy="108" r="3" fill="#4CAF50" stroke="none"/>
+  <!-- Monitor stand neck -->
+  <path d="M88 116 L88 136 L112 136 L112 116"
+        fill="#BDBDBD" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Monitor stand base -->
+  <path d="M62 136 L138 136 L142 144 L58 144 Z"
+        fill="#9E9E9E" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Keyboard -->
+  <rect x="36" y="156" width="128" height="28" rx="4" fill="#F5F5F5" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Keyboard key rows -->
+  <line x1="48" y1="166" x2="152" y2="166" stroke="#BDBDBD" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="174" x2="150" y2="174" stroke="#BDBDBD" stroke-width="2" stroke-linecap="round"/>
+  <!-- Individual key hints -->
+  <rect x="48" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="60" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="72" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="84" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="96" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="108" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="120" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <rect x="132" y="160" width="8" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+  <!-- Spacebar -->
+  <rect x="72" y="175" width="56" height="5" rx="1" fill="none" stroke="#9E9E9E" stroke-width="1"/>
+</svg>

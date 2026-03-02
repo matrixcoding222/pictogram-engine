@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Thought bubble - cloud shape with trailing dots, hand-drawn doodle style -->
+  <!-- Cloud body fill -->
+  <path d="M52 100 Q28 100 26 78 Q24 54 48 48 Q50 28 78 24 Q100 20 118 28 Q136 22 150 34 Q168 38 170 58 Q184 64 182 84 Q180 102 162 106 Q158 120 140 118 Q130 126 112 120 Q96 128 78 122 Q58 122 52 100 Z"
+        fill="#F5F5F5" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Cloud bumps detail lines for hand-drawn feel -->
+  <path d="M56 98 Q34 96 32 78 Q30 58 50 50 Q54 32 80 28 Q102 24 118 30"
+        fill="none" stroke="black" stroke-width="2" opacity="0.15" stroke-linecap="round"/>
+  <!-- Trailing thought dots (going down-left) -->
+  <ellipse cx="62" cy="142" rx="12" ry="10" fill="#F5F5F5" stroke="black" stroke-width="5"/>
+  <circle cx="42" cy="164" r="8" fill="#F5F5F5" stroke="black" stroke-width="5"/>
+  <circle cx="28" cy="182" r="5" fill="#F5F5F5" stroke="black" stroke-width="4"/>
+</svg>

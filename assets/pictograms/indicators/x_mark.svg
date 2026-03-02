@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- X mark - bold crossing lines, red color, hand-drawn doodle style -->
+  <!-- Background glow -->
+  <circle cx="100" cy="100" r="70" fill="#FFEBEE" stroke="none"/>
+  <!-- First diagonal: top-left to bottom-right with hand-drawn wobble -->
+  <path d="M42 38 Q60 56 78 78 Q92 94 100 102 Q114 118 132 138 Q148 156 160 164"
+        fill="none" stroke="#E53935" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Second diagonal: top-right to bottom-left with hand-drawn wobble -->
+  <path d="M160 38 Q142 56 124 78 Q110 94 100 102 Q88 118 68 138 Q52 156 42 164"
+        fill="none" stroke="#E53935" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

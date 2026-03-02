@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Lightbulb - classic shape with screw base, hand-drawn doodle style -->
+  <!-- Radiance lines -->
+  <line x1="100" y1="4" x2="100" y2="18" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="158" y1="24" x2="148" y2="34" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="176" y1="72" x2="162" y2="72" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="42" y1="24" x2="52" y2="34" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="24" y1="72" x2="38" y2="72" stroke="#FFD600" stroke-width="4" stroke-linecap="round"/>
+  <line x1="160" y1="108" x2="150" y2="102" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+  <line x1="40" y1="108" x2="50" y2="102" stroke="#FFD600" stroke-width="3" stroke-linecap="round"/>
+  <!-- Glass bulb -->
+  <path d="M72 118 Q42 98 40 66 Q38 30 100 24 Q162 30 160 66 Q158 98 128 118 L128 138 L72 138 Z"
+        fill="#FFF9C4" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Inner glow highlight -->
+  <path d="M82 60 Q90 42 108 42 Q120 44 126 56"
+        fill="none" stroke="white" stroke-width="3" opacity="0.6" stroke-linecap="round"/>
+  <!-- Filament -->
+  <path d="M88 100 L92 80 L100 92 L108 80 L112 100"
+        fill="none" stroke="#FFB300" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Screw base -->
+  <rect x="72" y="138" width="56" height="10" rx="2" fill="#BDBDBD" stroke="black" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M76 148 L124 148 L122 158 L78 158 Z" fill="#9E9E9E" stroke="black" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M78 158 L122 158 L118 168 L82 168 Z" fill="#BDBDBD" stroke="black" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M82 168 L118 168 L112 176 L88 176 Z" fill="#9E9E9E" stroke="black" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Bottom cap -->
+  <ellipse cx="100" cy="178" rx="14" ry="4" fill="#757575" stroke="black" stroke-width="3"/>
+</svg>

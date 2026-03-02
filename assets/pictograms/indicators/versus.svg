@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- VS text drawn as paths (no text elements), hand-drawn doodle style -->
+  <!-- Background burst circle -->
+  <circle cx="100" cy="100" r="82" fill="#FFF8E1" stroke="black" stroke-width="4"/>
+  <!-- Spiky burst lines around circle -->
+  <line x1="100" y1="8" x2="100" y2="22" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="100" y1="178" x2="100" y2="192" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="8" y1="100" x2="22" y2="100" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="178" y1="100" x2="192" y2="100" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="30" x2="40" y2="40" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="160" y1="30" x2="170" y2="20" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="30" y1="170" x2="20" y2="180" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="160" y1="170" x2="170" y2="180" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <!-- Letter V drawn as path - red color -->
+  <path d="M38 58 L46 60 L68 126 Q70 132 72 126 L94 60 L102 58"
+        fill="#E53935" stroke="#B71C1C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Letter S drawn as path - blue color -->
+  <path d="M158 66 Q154 54 140 50 Q124 46 114 54 Q104 62 112 74 Q118 82 134 88 Q152 94 156 108 Q160 124 146 134 Q132 144 116 140 Q104 136 100 124"
+        fill="none" stroke="#1565C0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- S fill hint -->
+  <path d="M152 66 Q148 56 138 54 Q126 50 118 58 Q110 66 118 76 Q126 84 138 90 Q150 96 152 110 Q154 124 144 130 Q132 138 120 136 Q110 132 106 124"
+        fill="#BBDEFB" opacity="0.4" stroke="none"/>
+</svg>

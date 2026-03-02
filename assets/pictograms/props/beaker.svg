@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Beaker/flask - science beaker with liquid, hand-drawn doodle style -->
+  <!-- Beaker body outline -->
+  <path d="M52 22 L52 170 Q52 180 62 180 L138 180 Q148 180 148 170 L148 22"
+        fill="white" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Liquid fill -->
+  <path d="M54 108 Q68 102 100 110 Q132 118 146 108 L146 170 Q146 178 138 178 L62 178 Q54 178 54 170 Z"
+        fill="#E8F5E9" stroke="none"/>
+  <!-- Liquid surface wavey line -->
+  <path d="M54 108 Q68 100 100 110 Q132 120 146 108"
+        fill="none" stroke="#66BB6A" stroke-width="3" stroke-linecap="round"/>
+  <!-- Bubbles in liquid -->
+  <circle cx="80" cy="142" r="4" fill="none" stroke="#81C784" stroke-width="2"/>
+  <circle cx="110" cy="152" r="3" fill="none" stroke="#81C784" stroke-width="2"/>
+  <circle cx="96" cy="162" r="5" fill="none" stroke="#81C784" stroke-width="2"/>
+  <!-- Rim / lip -->
+  <line x1="40" y1="22" x2="60" y2="22" stroke="black" stroke-width="5" stroke-linecap="round"/>
+  <line x1="140" y1="22" x2="160" y2="22" stroke="black" stroke-width="5" stroke-linecap="round"/>
+  <!-- Spout on left -->
+  <path d="M40 22 L34 36" fill="none" stroke="black" stroke-width="5" stroke-linecap="round"/>
+  <!-- Graduation marks -->
+  <line x1="52" y1="60" x2="72" y2="60" stroke="#9E9E9E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="52" y1="90" x2="68" y2="90" stroke="#9E9E9E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="52" y1="120" x2="72" y2="120" stroke="#9E9E9E" stroke-width="3" stroke-linecap="round"/>
+  <line x1="52" y1="150" x2="68" y2="150" stroke="#9E9E9E" stroke-width="3" stroke-linecap="round"/>
+  <!-- Glass highlight -->
+  <line x1="148" y1="34" x2="148" y2="100" stroke="white" stroke-width="3" opacity="0.5" stroke-linecap="round"/>
+</svg>

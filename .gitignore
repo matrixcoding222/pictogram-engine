@@ -1,0 +1,10 @@
+node_modules/
+output/
+.env
+dist/
+*.mp4
+*.wav
+*.mp3
+
+# Remotion temp files
+src/plugins/compositor/remotion-project/public/

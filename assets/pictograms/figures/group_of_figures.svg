@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 300" width="450" height="300">
+  <!-- Group of Figures — Three figures side by side, middle one slightly taller, all neutral -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- === FIGURE 1 (Left) === -->
+    <!-- Head -->
+    <circle cx="100" cy="52" r="26" fill="white"/>
+    <!-- Eyes -->
+    <circle cx="90" cy="47" r="4" fill="black" stroke="none"/>
+    <circle cx="110" cy="47" r="4" fill="black" stroke="none"/>
+    <!-- Mouth (neutral) -->
+    <path d="M 90 62 Q 100 62 110 62" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 100 78 Q 100 84 100 92"/>
+    <!-- Body -->
+    <path d="M 100 92 Q 101 114 100 136 Q 99 156 100 175"/>
+    <!-- Left arm -->
+    <path d="M 100 110 Q 86 126 74 146 Q 68 156 64 166"/>
+    <circle cx="64" cy="166" r="6" fill="white"/>
+    <!-- Right arm -->
+    <path d="M 100 110 Q 114 126 126 146 Q 132 156 136 166"/>
+    <circle cx="136" cy="166" r="6" fill="white"/>
+    <!-- Left leg -->
+    <path d="M 100 175 Q 93 205 86 240 Q 82 258 79 274"/>
+    <ellipse cx="75" cy="280" rx="12" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 100 175 Q 107 205 114 240 Q 118 258 121 274"/>
+    <ellipse cx="125" cy="280" rx="12" ry="7" fill="white"/>
+
+    <!-- === FIGURE 2 (Center, slightly taller) === -->
+    <!-- Head -->
+    <circle cx="225" cy="42" r="28" fill="white"/>
+    <!-- Eyes -->
+    <circle cx="214" cy="37" r="4" fill="black" stroke="none"/>
+    <circle cx="236" cy="37" r="4" fill="black" stroke="none"/>
+    <!-- Mouth (neutral) -->
+    <path d="M 213 52 Q 225 52 237 52" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 225 70 Q 225 76 225 86"/>
+    <!-- Body -->
+    <path d="M 225 86 Q 226 108 225 132 Q 224 156 225 178"/>
+    <!-- Left arm -->
+    <path d="M 225 106 Q 210 124 198 146 Q 192 156 188 166"/>
+    <circle cx="188" cy="166" r="6" fill="white"/>
+    <!-- Right arm -->
+    <path d="M 225 106 Q 240 124 252 146 Q 258 156 262 166"/>
+    <circle cx="262" cy="166" r="6" fill="white"/>
+    <!-- Left leg -->
+    <path d="M 225 178 Q 217 208 210 242 Q 206 258 203 274"/>
+    <ellipse cx="199" cy="280" rx="12" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 225 178 Q 233 208 240 242 Q 244 258 247 274"/>
+    <ellipse cx="251" cy="280" rx="12" ry="7" fill="white"/>
+
+    <!-- === FIGURE 3 (Right) === -->
+    <!-- Head -->
+    <circle cx="350" cy="52" r="26" fill="white"/>
+    <!-- Eyes -->
+    <circle cx="340" cy="47" r="4" fill="black" stroke="none"/>
+    <circle cx="360" cy="47" r="4" fill="black" stroke="none"/>
+    <!-- Mouth (neutral) -->
+    <path d="M 340 62 Q 350 62 360 62" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 350 78 Q 350 84 350 92"/>
+    <!-- Body -->
+    <path d="M 350 92 Q 351 114 350 136 Q 349 156 350 175"/>
+    <!-- Left arm -->
+    <path d="M 350 110 Q 336 126 324 146 Q 318 156 314 166"/>
+    <circle cx="314" cy="166" r="6" fill="white"/>
+    <!-- Right arm -->
+    <path d="M 350 110 Q 364 126 376 146 Q 382 156 386 166"/>
+    <circle cx="386" cy="166" r="6" fill="white"/>
+    <!-- Left leg -->
+    <path d="M 350 175 Q 343 205 336 240 Q 332 258 329 274"/>
+    <ellipse cx="325" cy="280" rx="12" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 350 175 Q 357 205 364 240 Q 368 258 371 274"/>
+    <ellipse cx="375" cy="280" rx="12" ry="7" fill="white"/>
+  </g>
+</svg>

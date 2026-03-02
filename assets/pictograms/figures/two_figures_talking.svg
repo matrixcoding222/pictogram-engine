@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 300" width="350" height="300">
+  <!-- Two Figures Talking — Left figure talking (open mouth), right figure listening (smile) -->
+  <g fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- === FIGURE 1 (Left, facing right, talking) === -->
+    <!-- Head -->
+    <circle cx="85" cy="45" r="28" fill="white"/>
+    <!-- Eyes (engaged, looking right) -->
+    <circle cx="78" cy="40" r="4" fill="black" stroke="none"/>
+    <circle cx="96" cy="40" r="4" fill="black" stroke="none"/>
+    <!-- Mouth (open, talking) -->
+    <ellipse cx="88" cy="58" rx="8" ry="6" fill="black" stroke="none"/>
+    <!-- Neck -->
+    <path d="M 85 73 Q 85 79 85 88"/>
+    <!-- Body -->
+    <path d="M 85 88 Q 86 110 85 132 Q 84 155 85 175"/>
+    <!-- Left arm — at side / gesturing slightly back -->
+    <path d="M 85 108 Q 68 122 56 140 Q 50 150 46 160"/>
+    <!-- Left hand -->
+    <circle cx="46" cy="160" r="6" fill="white"/>
+    <!-- Right arm — gesturing forward toward other figure -->
+    <path d="M 85 108 Q 102 112 118 118 Q 130 124 138 130"/>
+    <!-- Right hand -->
+    <circle cx="138" cy="130" r="6" fill="white"/>
+    <!-- Left leg -->
+    <path d="M 85 175 Q 77 205 70 240 Q 67 258 64 274"/>
+    <!-- Left foot -->
+    <ellipse cx="60" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 85 175 Q 93 205 100 240 Q 103 258 106 274"/>
+    <!-- Right foot -->
+    <ellipse cx="110" cy="280" rx="13" ry="7" fill="white"/>
+
+    <!-- === Speech lines between figures === -->
+    <path d="M 148 40 L 162 40" stroke-width="4" opacity="0.5"/>
+    <path d="M 145 50 L 165 50" stroke-width="4" opacity="0.5"/>
+    <path d="M 150 60 L 160 60" stroke-width="4" opacity="0.5"/>
+    <path d="M 188 42 L 202 42" stroke-width="4" opacity="0.5"/>
+    <path d="M 185 52 L 205 52" stroke-width="4" opacity="0.5"/>
+    <path d="M 190 62 L 200 62" stroke-width="4" opacity="0.5"/>
+
+    <!-- === FIGURE 2 (Right, facing left, listening) === -->
+    <!-- Head -->
+    <circle cx="265" cy="45" r="28" fill="white"/>
+    <!-- Eyes (attentive, looking left) -->
+    <circle cx="254" cy="40" r="4" fill="black" stroke="none"/>
+    <circle cx="272" cy="40" r="4" fill="black" stroke="none"/>
+    <!-- Mouth (slight attentive smile) -->
+    <path d="M 252 56 Q 265 64 278 56" stroke-width="4" fill="none"/>
+    <!-- Neck -->
+    <path d="M 265 73 Q 265 79 265 88"/>
+    <!-- Body -->
+    <path d="M 265 88 Q 264 110 265 132 Q 266 155 265 175"/>
+    <!-- Left arm — slightly toward the speaker -->
+    <path d="M 265 108 Q 248 112 232 118 Q 220 124 212 130"/>
+    <!-- Left hand -->
+    <circle cx="212" cy="130" r="6" fill="white"/>
+    <!-- Right arm — at side -->
+    <path d="M 265 108 Q 282 122 294 140 Q 300 150 304 160"/>
+    <!-- Right hand -->
+    <circle cx="304" cy="160" r="6" fill="white"/>
+    <!-- Left leg -->
+    <path d="M 265 175 Q 257 205 250 240 Q 247 258 244 274"/>
+    <!-- Left foot -->
+    <ellipse cx="240" cy="280" rx="13" ry="7" fill="white"/>
+    <!-- Right leg -->
+    <path d="M 265 175 Q 273 205 280 240 Q 283 258 286 274"/>
+    <!-- Right foot -->
+    <ellipse cx="290" cy="280" rx="13" ry="7" fill="white"/>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Question mark drawn as path - bold hand-drawn doodle style -->
+  <!-- Curved top part of question mark -->
+  <path d="M68 62 Q67 34 82 24 Q96 14 112 18 Q128 22 134 38 Q140 54 124 68 Q112 78 106 88 L102 102"
+        fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Dot at bottom -->
+  <circle cx="100" cy="132" r="12" fill="#E3F2FD" stroke="black" stroke-width="5"/>
+  <!-- Subtle background glow circle for visual richness -->
+  <circle cx="100" cy="80" r="68" fill="#E3F2FD" opacity="0.3" stroke="none"/>
+  <!-- Redraw the question mark curve on top of glow for emphasis -->
+  <path d="M70 64 Q68 32 84 22 Q100 12 116 18 Q132 24 136 42 Q140 58 122 70 Q108 80 104 92 L101 104"
+        fill="none" stroke="black" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bold dot -->
+  <circle cx="100" cy="134" r="13" fill="#E3F2FD" stroke="black" stroke-width="5"/>
+</svg>

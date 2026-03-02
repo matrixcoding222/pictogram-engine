@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Telescope - angled on tripod, hand-drawn doodle style -->
+  <!-- Tripod legs -->
+  <line x1="112" y1="118" x2="68" y2="188" stroke="black" stroke-width="5" stroke-linecap="round"/>
+  <line x1="112" y1="118" x2="112" y2="190" stroke="black" stroke-width="5" stroke-linecap="round"/>
+  <line x1="112" y1="118" x2="156" y2="188" stroke="black" stroke-width="5" stroke-linecap="round"/>
+  <!-- Tripod feet -->
+  <circle cx="68" cy="188" r="4" fill="#757575" stroke="black" stroke-width="3"/>
+  <circle cx="112" cy="190" r="4" fill="#757575" stroke="black" stroke-width="3"/>
+  <circle cx="156" cy="188" r="4" fill="#757575" stroke="black" stroke-width="3"/>
+  <!-- Telescope tube body -->
+  <path d="M26 42 L118 86 L118 106 L26 62 Z"
+        fill="#BDBDBD" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Telescope tube highlight -->
+  <path d="M30 46 L114 88 L114 92 L30 50 Z"
+        fill="#E0E0E0" stroke="none"/>
+  <!-- Eyepiece (wider back end) -->
+  <path d="M118 82 L138 92 L138 114 L118 110 Z"
+        fill="#9E9E9E" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Front lens cap (wider front end) -->
+  <path d="M26 38 L14 32 L14 68 L26 66 Z"
+        fill="#757575" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lens glass -->
+  <line x1="14" y1="38" x2="14" y2="62" stroke="#90CAF9" stroke-width="3" stroke-linecap="round"/>
+  <!-- Pivot joint -->
+  <circle cx="112" cy="112" r="8" fill="#616161" stroke="black" stroke-width="4"/>
+</svg>

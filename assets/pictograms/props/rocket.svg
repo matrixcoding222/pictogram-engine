@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Rocket - classic shape pointing up, hand-drawn doodle style -->
+  <!-- Exhaust flames -->
+  <path d="M78 156 Q72 170 68 184 Q76 174 82 186 Q88 174 94 188 Q98 174 104 190 Q108 176 114 186 Q118 174 124 184 Q120 170 118 156"
+        fill="#FF9800" stroke="#E65100" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Inner flame -->
+  <path d="M86 156 Q84 166 82 176 Q88 168 94 178 Q98 168 104 176 Q106 166 110 156"
+        fill="#FFF176" stroke="none"/>
+  <!-- Left fin -->
+  <path d="M72 110 L40 148 Q38 152 42 152 L72 142 Z"
+        fill="#FFCDD2" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right fin -->
+  <path d="M124 110 L156 148 Q158 152 154 152 L124 142 Z"
+        fill="#FFCDD2" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Rocket body -->
+  <path d="M98 12 Q72 40 70 80 L70 150 Q70 156 78 156 L118 156 Q126 156 126 150 L126 80 Q124 40 98 12 Z"
+        fill="#FFCDD2" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Nose cone tip highlight -->
+  <path d="M98 16 Q86 36 82 56" fill="none" stroke="white" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+  <!-- Body stripe -->
+  <rect x="70" y="128" width="56" height="16" fill="#EF5350" stroke="none" rx="0"/>
+  <line x1="70" y1="128" x2="126" y2="128" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <line x1="70" y1="144" x2="126" y2="144" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <!-- Window porthole -->
+  <circle cx="98" cy="72" r="16" fill="#E3F2FD" stroke="black" stroke-width="5"/>
+  <!-- Window reflection -->
+  <path d="M88 66 Q92 60 100 62" fill="none" stroke="white" stroke-width="3" opacity="0.6" stroke-linecap="round"/>
+  <!-- Window inner ring -->
+  <circle cx="98" cy="72" r="11" fill="none" stroke="#90CAF9" stroke-width="2"/>
+</svg>

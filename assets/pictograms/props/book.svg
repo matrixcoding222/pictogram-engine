@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Open book - with pages fanned, hand-drawn doodle style -->
+  <!-- Left page -->
+  <path d="M100 34 Q70 28 20 38 L18 162 Q60 154 100 160 Z"
+        fill="#FFF8E1" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Right page -->
+  <path d="M100 34 Q130 28 180 38 L182 162 Q140 154 100 160 Z"
+        fill="#FFFDE7" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Spine shadow -->
+  <path d="M100 34 L100 160"
+        fill="none" stroke="black" stroke-width="4" stroke-linecap="round"/>
+  <!-- Spine curve detail -->
+  <path d="M96 36 Q100 34 104 36" fill="none" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <!-- Back cover edges visible beneath -->
+  <path d="M16 40 L14 166 Q58 156 100 164" fill="none" stroke="#8D6E63" stroke-width="3" stroke-linecap="round"/>
+  <path d="M184 40 L186 166 Q142 156 100 164" fill="none" stroke="#8D6E63" stroke-width="3" stroke-linecap="round"/>
+  <!-- Text lines on left page -->
+  <line x1="36" y1="66" x2="82" y2="62" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="36" y1="82" x2="84" y2="78" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="36" y1="98" x2="82" y2="96" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="36" y1="114" x2="78" y2="112" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="36" y1="130" x2="74" y2="128" stroke="#BDBDBD" stroke-width="2" stroke-linecap="round"/>
+  <!-- Text lines on right page -->
+  <line x1="118" y1="62" x2="164" y2="66" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="116" y1="78" x2="164" y2="82" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="116" y1="96" x2="164" y2="98" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="118" y1="112" x2="162" y2="114" stroke="#BDBDBD" stroke-width="3" stroke-linecap="round"/>
+  <line x1="120" y1="128" x2="160" y2="130" stroke="#BDBDBD" stroke-width="2" stroke-linecap="round"/>
+  <!-- Page edge detail (stacked pages) -->
+  <path d="M18 164 Q60 156 100 162" fill="none" stroke="#D7CCC8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M182 164 Q140 156 100 162" fill="none" stroke="#D7CCC8" stroke-width="2" stroke-linecap="round"/>
+</svg>
