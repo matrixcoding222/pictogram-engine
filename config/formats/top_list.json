@@ -1,0 +1,52 @@
+{
+  "format_id": "top_list",
+  "format_name": "Top N List",
+
+  "grid": {
+    "columns": 3,
+    "cell_art_resolution": 1024,
+    "cell_art_prompt_suffix": "digital illustration, thick black outlines, simple flat shading, vibrant colors, centered composition, dark background, clean vector art style, no text, square format",
+    "cell_border_color": "#111111",
+    "cell_highlight_color": "#FFD700",
+    "background_color": "#0a0a0a"
+  },
+
+  "number_card": {
+    "duration_seconds": 2.0,
+    "background_color": "#000000",
+    "number_color": "#FFFFFF",
+    "glow_color": "#FFD700"
+  },
+
+  "captions": {
+    "enabled": true,
+    "words_per_group": 4,
+    "position": "bottom_center",
+    "font_size": 48,
+    "highlight_color": "#FFD700",
+    "base_color": "#FFFFFF",
+    "background_opacity": 0.6
+  },
+
+  "timing": {
+    "grid_overview_seconds": 4.0,
+    "zoom_transition_seconds": 3.0,
+    "number_card_seconds": 2.0,
+    "pull_back_seconds": 2.5
+  },
+
+  "section_content": {
+    "min_scenes_per_section": 3,
+    "max_scenes_per_section": 8,
+    "image_style_suffixes": {
+      "ai_illustration": "digital illustration, detailed, vibrant colors, dramatic lighting, concept art style, high quality",
+      "cinematic_ai": "cinematic photorealistic, dramatic lighting, 8k, volumetric lighting, wide angle lens, movie still quality, epic scale"
+    }
+  },
+
+  "thumbnail": {
+    "source": "grid_screenshot",
+    "title_overlay": true,
+    "title_font_size": 52
+  }
+}

@@ -5,15 +5,5 @@ export interface ScriptConfig {
   words_per_minute: number;
 }
 
-export interface SubTopic {
-  name: string;
-  narrationText: string;
-}
-
-export interface GeneratedScript {
-  title: string;
-  fullText: string;
-  fullNarration: string;
-  wordCount: number;
-  subTopics: SubTopic[];
-}
+// Re-export v2 types for convenience
+export type { ParsedScript, SubTopicV2 } from "../../core/types-v2.js";

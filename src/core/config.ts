@@ -53,13 +53,20 @@ export interface UploadSettings {
   default_tags: string[];
 }
 
+export interface GridArtSettings {
+  provider: string;
+  model: string;
+}
+
 export interface ChannelConfig {
   channel_id: string;
   channel_name: string;
+  default_format: string;
   script: ScriptSettings;
   voice: VoiceSettings;
   visuals: VisualsSettings;
   image_sourcing: ImageSourcingSettings;
+  grid_art: GridArtSettings;
   music: MusicSettings;
   thumbnail: ThumbnailSettings;
   upload: UploadSettings;
@@ -154,10 +161,18 @@ function validate(raw: unknown): ChannelConfig {
   assertString(thumbnail, "grid", "thumbnail");
   assertString(thumbnail, "background", "thumbnail");
 
+  // grid_art
+  const gridArt = assertObject(root, "grid_art", "root");
+  assertString(gridArt, "provider", "grid_art");
+  assertString(gridArt, "model", "grid_art");
+
   // upload
   const upload = assertObject(root, "upload", "root");
   assertString(upload, "category_id", "upload");
   assertStringArray(upload, "default_tags", "upload");
+
+  // default_format
+  assertString(root, "default_format", "root");
 
   return root as unknown as ChannelConfig;
 }

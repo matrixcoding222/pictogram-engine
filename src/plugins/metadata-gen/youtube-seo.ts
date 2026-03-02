@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { GeneratedScript } from "../script-gen/types.js";
+import type { ParsedScript } from "../../core/types-v2.js";
 import type { UploadSettings } from "../../core/config.js";
 
 // ---------------------------------------------------------------------------
@@ -48,7 +48,7 @@ RESPOND WITH VALID JSON ONLY — no markdown fences, no commentary:
  * @returns            YouTube metadata ready for the Data API.
  */
 export async function generateMetadata(
-  script: GeneratedScript,
+  script: ParsedScript,
   topic: string,
   uploadConfig: UploadSettings,
 ): Promise<YouTubeMetadata> {

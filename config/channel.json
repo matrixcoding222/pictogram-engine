@@ -2,6 +2,8 @@
   "channel_id": "science-mysteries-explained",
   "channel_name": "Science Mysteries Explained",
 
+  "default_format": "top_list",
+
   "script": {
     "model": "claude-sonnet-4-5-20250929",
     "target_duration_minutes": 10,
@@ -30,6 +32,11 @@
   "image_sourcing": {
     "priority": ["pexels", "flux_ai"],
     "flux_model": "black-forest-labs/flux-1.1-pro"
+  },
+
+  "grid_art": {
+    "provider": "flux",
+    "model": "black-forest-labs/flux-1.1-pro"
   },
 
   "music": {

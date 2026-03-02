@@ -4,8 +4,10 @@ import sharp from "sharp";
 
 import type { ScenePlan } from "../scene-planner/types.js";
 import type { ImageSourcingConfig, SourcedImage } from "./types.js";
+import type { ScenePlanV2, SourcedImageV2 } from "../../core/types-v2.js";
 import { searchPexels } from "./pexels.js";
-import { generateAIImage } from "./flux-ai.js";
+import { generateAIImage, generateStyledAIImage } from "./flux-ai.js";
+import { generateDiagram } from "./diagram-generator.js";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -215,6 +217,125 @@ export async function sourceImagesForScenes(
     `[image-pipeline] Image sourcing complete. ` +
       `Pexels: ${pexelsCount}, FLUX AI: ${fluxCount}, Skipped (doodle): ${skippedCount}`,
   );
+
+  return results;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// V2 Image Pipeline — Multi-Type Routing
+// ═══════════════════════════════════════════════════════════════════
+
+// V2 images are 1.2x larger than viewport for Ken Burns camera headroom
+const V2_TARGET_WIDTH = 2304;  // 1920 * 1.2
+const V2_TARGET_HEIGHT = 1296; // 1080 * 1.2
+
+async function processImageV2(imageBuffer: Buffer): Promise<Buffer> {
+  return sharp(imageBuffer)
+    .resize(V2_TARGET_WIDTH, V2_TARGET_HEIGHT, {
+      fit: "cover",
+      position: sharp.strategy.attention,
+    })
+    .png()
+    .toBuffer();
+}
+
+/**
+ * Source images for v2 scenes with multi-type routing.
+ * Each scene type maps to exactly one provider.
+ */
+export async function sourceImagesForScenesV2(
+  scenes: ScenePlanV2[],
+  outputDir: string,
+): Promise<SourcedImageV2[]> {
+  fs.mkdirSync(outputDir, { recursive: true });
+  const results: SourcedImageV2[] = [];
+
+  console.log(`[image-pipeline-v2] Sourcing images for ${scenes.length} scenes`);
+
+  for (let i = 0; i < scenes.length; i++) {
+    const scene = scenes[i];
+    const outputPath = path.join(outputDir, `${scene.scene_id}.png`);
+
+    try {
+      switch (scene.scene_type) {
+        case "real_photo": {
+          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: Pexels → "${scene.image_search_query}"`);
+          const photo = await searchPexels(scene.image_search_query);
+          if (photo) {
+            const raw = await downloadImage(photo.urlLarge2x || photo.url);
+            const processed = await processImageV2(raw);
+            fs.writeFileSync(outputPath, processed);
+            results.push({ localPath: outputPath, source: "pexels", attribution: `Photo by ${photo.photographer}` });
+          } else {
+            results.push({ localPath: "", source: "none" });
+          }
+          break;
+        }
+
+        case "ai_illustration": {
+          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: FLUX illustration`);
+          const raw = await generateStyledAIImage(scene.ai_image_prompt, "illustration");
+          const processed = await processImageV2(raw);
+          fs.writeFileSync(outputPath, processed);
+          results.push({ localPath: outputPath, source: "flux_ai_illustration" });
+          break;
+        }
+
+        case "cinematic_ai": {
+          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: FLUX cinematic`);
+          const raw = await generateStyledAIImage(scene.ai_image_prompt, "cinematic");
+          const processed = await processImageV2(raw);
+          fs.writeFileSync(outputPath, processed);
+          results.push({ localPath: outputPath, source: "flux_ai_cinematic" });
+          break;
+        }
+
+        case "diagram": {
+          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: Claude diagram`);
+          const result = await generateDiagram(
+            scene.diagram_description || scene.ai_image_prompt,
+            outputPath,
+          );
+          results.push(result);
+          break;
+        }
+
+        case "text_card": {
+          // No image needed — rendered entirely in Remotion
+          results.push({ localPath: "", source: "text_card" });
+          break;
+        }
+
+        default:
+          results.push({ localPath: "", source: "none" });
+      }
+    } catch (err) {
+      console.warn(`[image-pipeline-v2] Failed for scene ${scene.scene_id}: ${(err as Error).message}`);
+      // Fallback: try Pexels as last resort for any scene type
+      try {
+        const query = scene.image_search_query || scene.ai_image_prompt?.slice(0, 50) || scene.scene_id;
+        const photo = await searchPexels(query);
+        if (photo) {
+          const raw = await downloadImage(photo.urlLarge2x || photo.url);
+          const processed = await processImageV2(raw);
+          fs.writeFileSync(outputPath, processed);
+          results.push({ localPath: outputPath, source: "pexels" });
+          continue;
+        }
+      } catch { /* ignore fallback errors */ }
+      results.push({ localPath: "", source: "none" });
+    }
+  }
+
+  const counts = {
+    pexels: results.filter(r => r.source === "pexels").length,
+    illustration: results.filter(r => r.source === "flux_ai_illustration").length,
+    cinematic: results.filter(r => r.source === "flux_ai_cinematic").length,
+    diagram: results.filter(r => r.source === "diagram").length,
+    textCard: results.filter(r => r.source === "text_card").length,
+    none: results.filter(r => r.source === "none").length,
+  };
+  console.log(`[image-pipeline-v2] Complete: ${JSON.stringify(counts)}`);
 
   return results;
 }

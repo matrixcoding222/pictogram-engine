@@ -1,9 +1,9 @@
 import { generateScript } from "../plugins/script-gen/claude-script-gen.js";
-import { planScenes, injectTopicListScenes } from "../plugins/scene-planner/claude-scene-planner.js";
+import { planScenes, injectTopicListScenes, planAllSections } from "../plugins/scene-planner/claude-scene-planner.js";
 import { generateVoice } from "../plugins/voice-gen/elevenlabs.js";
-import { sourceImagesForScenes } from "../plugins/image-sourcer/image-pipeline.js";
+import { sourceImagesForScenes, sourceImagesForScenesV2 } from "../plugins/image-sourcer/image-pipeline.js";
 import { searchPexels } from "../plugins/image-sourcer/pexels.js";
-import { renderVideoWithRemotion } from "../plugins/compositor/render.js";
+import { renderVideoWithRemotion, renderVideoWithRemotionV2 } from "../plugins/compositor/render.js";
 import {
   assembleWithFFmpeg,
   selectMusicTrack,
@@ -13,12 +13,17 @@ import { generateMetadata } from "../plugins/metadata-gen/youtube-seo.js";
 import { uploadToYouTube } from "../plugins/uploader/youtube-upload.js";
 import { generateSRT } from "../plugins/captions/srt-generator.js";
 import { loadConfig } from "./config.js";
+import { loadFormatTemplate } from "./format-loader.js";
+import { alignStructuralTimeline, calculateTotalFramesFromTimeline } from "./alignment.js";
+import { directGridArt } from "../plugins/grid-art/art-director.js";
+import { generateAllGridArt } from "../plugins/grid-art/grid-art-generator.js";
 import type { ChannelConfig } from "./config.js";
+import type { FormatTemplate, TimelineSegment, ScenePlanV2, SourcedImageV2 } from "./types-v2.js";
 import type { AlignedScene } from "../plugins/scene-planner/types.js";
 import type { ScenePlan } from "../plugins/scene-planner/types.js";
 import type { WordTimestamp } from "../plugins/voice-gen/types.js";
 import type { SourcedImage } from "../plugins/image-sourcer/types.js";
-import type { VideoData, SceneData } from "../plugins/compositor/remotion-project/src/types.js";
+import type { VideoData, SceneData, VideoDataV2, SegmentRenderData, SceneRenderData } from "../plugins/compositor/remotion-project/src/types.js";
 import sharp from "sharp";
 import crypto from "crypto";
 import path from "path";
@@ -28,9 +33,10 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
-/**
- * Downloads an image from a URL and returns it as a Buffer.
- */
+// ═══════════════════════════════════════════════════════════════════
+// Shared Helpers
+// ═══════════════════════════════════════════════════════════════════
+
 async function downloadImage(url: string): Promise<Buffer> {
   const response = await fetch(url);
   if (!response.ok) {
@@ -39,10 +45,10 @@ async function downloadImage(url: string): Promise<Buffer> {
   return Buffer.from(await response.arrayBuffer());
 }
 
-/**
- * Sources a representative image for each sub-topic from Pexels.
- * These images are used in the photo grid topic overview.
- */
+// ═══════════════════════════════════════════════════════════════════
+// V1 Pipeline (preserved for backward compat)
+// ═══════════════════════════════════════════════════════════════════
+
 async function sourceTopicImages(
   subTopicNames: string[],
   outputDir: string,
@@ -64,7 +70,6 @@ async function sourceTopicImages(
         console.log(`[topic-images] Saved image for "${query}" → topic_${i}.png`);
         results.push({ name: query, localPath });
       } else {
-        console.log(`[topic-images] No image found for "${query}", using placeholder`);
         results.push({ name: query, localPath: "" });
       }
     } catch (err) {
@@ -85,7 +90,6 @@ function alignScenesToVoice(
   let lastEndTime = 0;
 
   return scenes.map((scene) => {
-    // topic_list scenes have no narration — give them fixed duration
     if (scene.scene_type === "topic_list") {
       const fixedDuration = scene.duration_estimate_seconds;
       const startTime = lastEndTime;
@@ -126,12 +130,11 @@ function buildRemotionData(
   let imageIndex = 0;
 
   const scenes: SceneData[] = alignedScenes.map((scene) => {
-    // Topic list scenes: pass topic grid data with image paths
     if (scene.scene_type === "topic_list") {
       const topicListData = scene.topic_list_data ? {
         items: scene.topic_list_data.items.map((item) => ({
           name: item.name,
-          imageSrc: item.image_path, // absolute path, prepareAssets will copy
+          imageSrc: item.image_path,
         })),
         highlightedIndex: scene.topic_list_data.highlighted_index,
       } : undefined;
@@ -287,9 +290,6 @@ export async function generateVideo(topic: string) {
   console.log(`  ID: ${videoId}`);
   console.log(`========================================\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 1: Generate script
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 1/10] Generating script...");
   const script = await generateScript(topic, config.script);
   fs.writeFileSync(
@@ -300,41 +300,23 @@ export async function generateVideo(topic: string) {
     `  Done: ${script.wordCount} words, ${script.subTopics.length} sub-topics\n`
   );
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 1.5: Source images for topic grid overview
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 1.5/10] Sourcing topic grid images...");
   const subTopicNames = script.subTopics.map((s) => s.name);
   const topicImages = await sourceTopicImages(subTopicNames, path.join(outputDir, "scenes"));
   console.log(`  Done: ${topicImages.filter(t => t.localPath).length}/${topicImages.length} topic images sourced\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 2: Plan scenes + inject topic grid
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 2/10] Planning scenes...");
-  const rawScenePlan = await planScenes(script.fullText, config.visuals);
-
-  // Inject topic grid scenes programmatically
+  const rawScenePlan = await planScenes(script.fullText ?? script.fullNarration, config.visuals);
   const subTopicNarrations = script.subTopics.map((s) => s.narrationText);
   const scenePlan = injectTopicListScenes(rawScenePlan, topicImages, subTopicNarrations);
-
   fs.writeFileSync(
     path.join(outputDir, "scene-plan.json"),
     JSON.stringify(scenePlan, null, 2)
   );
-  const doodleCount = scenePlan.filter((s) => s.scene_type === "doodle").length;
-  const refCount = scenePlan.filter((s) => s.scene_type === "reference_image").length;
-  const topicListCount = scenePlan.filter((s) => s.scene_type === "topic_list").length;
-  console.log(`  Done: ${scenePlan.length} scenes planned (${doodleCount} doodle, ${refCount} reference, ${topicListCount} topic grid)\n`);
+  console.log(`  Done: ${scenePlan.length} scenes planned\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 3: Generate voice + source images IN PARALLEL
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 3/10] Generating voice & sourcing images (parallel)...");
-
-  // Only pass non-topic-list scenes to image sourcer
   const scenesForImages = scenePlan.filter((s) => s.scene_type !== "topic_list");
-
   const [voiceResult, images] = await Promise.all([
     generateVoice(script.fullNarration, config.voice),
     sourceImagesForScenes(
@@ -351,23 +333,14 @@ export async function generateVideo(topic: string) {
   console.log(`  Voice: ${voiceResult.durationSeconds.toFixed(1)}s`);
   console.log(`  Images: ${images.length} sourced\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 4: Align scenes to voice timestamps
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 4/10] Aligning scenes to voice...");
-  const alignedScenes = alignScenesToVoice(
-    scenePlan,
-    voiceResult.wordTimestamps
-  );
+  const alignedScenes = alignScenesToVoice(scenePlan, voiceResult.wordTimestamps);
   fs.writeFileSync(
     path.join(outputDir, "aligned-scenes.json"),
     JSON.stringify(alignedScenes, null, 2)
   );
-  console.log(`  Done: ${alignedScenes.length} scenes aligned to audio\n`);
+  console.log(`  Done: ${alignedScenes.length} scenes aligned\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 5: Render visual track with Remotion
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 5/10] Rendering visual track (Remotion)...");
   const visualTrackPath = path.join(outputDir, "visual_track.mp4");
   const videoData = buildRemotionData(alignedScenes, images, config);
@@ -378,9 +351,6 @@ export async function generateVideo(topic: string) {
   await renderVideoWithRemotion(videoData, visualTrackPath);
   console.log(`  Done: Visual track rendered\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 6: Assemble final video with FFmpeg
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 6/10] Assembling final video (FFmpeg)...");
   const musicTrack = selectMusicTrack(scenePlan, config.music);
   const finalVideoPath = path.join(outputDir, "final.mp4");
@@ -392,18 +362,12 @@ export async function generateVideo(topic: string) {
   );
   console.log(`  Done: Final video assembled\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 7: Generate thumbnail
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 7/10] Generating thumbnail...");
   const thumbnailPath = path.join(outputDir, "thumbnail.png");
   const thumbnailImages = selectThumbnailImages(alignedScenes, images);
   await generateThumbnail(script.title, thumbnailImages, thumbnailPath);
   console.log(`  Done: Thumbnail generated\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 8: Generate metadata + captions
-  // ═══════════════════════════════════════════════════════════
   console.log("[Step 8/10] Generating metadata & captions...");
   const metadata = await generateMetadata(script, topic, config.upload);
   const srt = generateSRT(voiceResult.wordTimestamps);
@@ -414,9 +378,6 @@ export async function generateVideo(topic: string) {
   fs.writeFileSync(path.join(outputDir, "captions.srt"), srt);
   console.log(`  Done: Metadata and captions ready\n`);
 
-  // ═══════════════════════════════════════════════════════════
-  // STEP 9: Upload (optional)
-  // ═══════════════════════════════════════════════════════════
   if (process.env.AUTO_UPLOAD === "true") {
     console.log("[Step 9/10] Uploading to YouTube...");
     const youtubeId = await uploadToYouTube(
@@ -435,6 +396,322 @@ export async function generateVideo(topic: string) {
   console.log(`  VIDEO COMPLETE`);
   console.log(`  Output: ${outputDir}/final.mp4`);
   console.log(`========================================\n`);
+
+  return { videoId, outputDir, finalVideoPath };
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// V2 Pipeline — Grid-Based Visual Storytelling
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Build Remotion-ready data from the structural timeline, sourced images,
+ * and grid cell art.
+ */
+function buildRemotionDataV2(
+  timeline: TimelineSegment[],
+  sectionImages: Map<number, SourcedImageV2[]>,
+  gridCellArt: Array<{ topicName: string; localPath: string }>,
+  wordTimestamps: WordTimestamp[],
+  format: FormatTemplate,
+  fps: number,
+): VideoDataV2 {
+  const segments: SegmentRenderData[] = timeline.map((seg) => {
+    const base: SegmentRenderData = {
+      type: seg.type,
+      startFrame: seg.startFrame,
+      durationInFrames: seg.durationInFrames,
+      narrationText: seg.narrationText,
+      topicIndex: seg.topicIndex,
+      topicName: seg.topicName,
+      completedCells: seg.completedCells,
+      numberCardNumber: seg.numberCardNumber,
+    };
+
+    // Attach scene render data for segments with aligned scenes
+    if (seg.scenes && seg.scenes.length > 0) {
+      // Find the corresponding images for this segment's section
+      const sectionKey = seg.type === "hook" ? -1 : seg.type === "outro" ? -2 : (seg.topicIndex ?? 0);
+      const images = sectionImages.get(sectionKey) || [];
+
+      let sceneOffset = 0;
+      base.scenes = seg.scenes.map((scene, i) => {
+        const image = images[i];
+        const render: SceneRenderData = {
+          sceneType: scene.scene_type,
+          camera: scene.camera.type,
+          mood: scene.mood,
+          imageSrc: image?.localPath || "",
+          textCardContent: scene.text_card_content,
+          durationInFrames: scene.durationInFrames,
+          startFrame: sceneOffset,
+        };
+        sceneOffset += scene.durationInFrames;
+        return render;
+      });
+    }
+
+    return base;
+  });
+
+  return {
+    segments,
+    gridCells: gridCellArt.map((cell) => ({
+      topicName: cell.topicName,
+      imageSrc: cell.localPath,
+    })),
+    wordTimestamps: wordTimestamps.map((w) => ({
+      word: w.word,
+      start: w.start,
+      end: w.end,
+    })),
+    captions: {
+      enabled: format.captions.enabled,
+      wordsPerGroup: format.captions.words_per_group,
+      position: format.captions.position,
+      fontSize: format.captions.font_size,
+      highlightColor: format.captions.highlight_color,
+      baseColor: format.captions.base_color,
+      backgroundOpacity: format.captions.background_opacity,
+    },
+    fps,
+    gridConfig: {
+      columns: format.grid.columns,
+      backgroundColor: format.grid.background_color,
+      cellBorderColor: format.grid.cell_border_color,
+      cellHighlightColor: format.grid.cell_highlight_color,
+    },
+    numberCardConfig: {
+      backgroundColor: format.number_card.background_color,
+      numberColor: format.number_card.number_color,
+      glowColor: format.number_card.glow_color,
+    },
+  };
+}
+
+/**
+ * V2 video generation pipeline.
+ *
+ * Step 1:  Generate format-aware script
+ * Step 2:  Generate grid cell art (Claude art direction + FLUX)
+ * Step 3:  Plan section scenes (per-section Claude calls)
+ * Step 4:  Generate voice + source section images (parallel)
+ * Step 5:  Structural alignment
+ * Step 6:  Build Remotion data
+ * Step 7:  Render visual track (Remotion)
+ * Step 8:  Assemble final video (FFmpeg)
+ * Step 9:  Generate thumbnail + metadata + captions
+ * Step 10: Upload (optional)
+ */
+export async function generateVideoV2(topic: string) {
+  const config = loadConfig(PROJECT_ROOT);
+  const format = loadFormatTemplate(config.default_format, PROJECT_ROOT);
+  const fps = 30;
+  const videoId = crypto.randomUUID().substring(0, 8);
+  const outputDir = path.resolve(PROJECT_ROOT, `output/${videoId}`);
+  fs.mkdirSync(outputDir, { recursive: true });
+  fs.mkdirSync(path.join(outputDir, "scenes"), { recursive: true });
+  fs.mkdirSync(path.join(outputDir, "grid-cells"), { recursive: true });
+
+  console.log(`\n════════════════════════════════════════`);
+  console.log(`  PICTOGRAM ENGINE v2`);
+  console.log(`  Topic: "${topic}"`);
+  console.log(`  Format: ${format.format_name}`);
+  console.log(`  ID: ${videoId}`);
+  console.log(`════════════════════════════════════════\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 1: Generate format-aware script
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 1/10] Generating script...");
+  const script = await generateScript(topic, config.script);
+  fs.writeFileSync(
+    path.join(outputDir, "script.json"),
+    JSON.stringify(script, null, 2),
+  );
+  console.log(`  Title: "${script.title}"`);
+  console.log(`  ${script.wordCount} words, ${script.subTopics.length} sub-topics`);
+  console.log(`  Hook: ${script.hook.split(/\s+/).length} words`);
+  console.log(`  Bridges: ${script.bridges.length}\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 2: Generate grid cell art
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 2/10] Generating grid cell art...");
+  console.log("  Art directing with Claude...");
+  const artDirection = await directGridArt(script.subTopics);
+  fs.writeFileSync(
+    path.join(outputDir, "art-direction.json"),
+    JSON.stringify(artDirection, null, 2),
+  );
+
+  console.log("  Generating cell images with FLUX...");
+  const gridCellArt = await generateAllGridArt(
+    artDirection,
+    format.grid,
+    path.join(outputDir, "grid-cells"),
+  );
+  const gridSuccess = gridCellArt.filter((c) => c.source !== "none").length;
+  console.log(`  Done: ${gridSuccess}/${gridCellArt.length} grid cells generated\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 3: Plan section scenes
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 3/10] Planning section scenes...");
+  const sectionPlans = await planAllSections(
+    script,
+    format.section_content.min_scenes_per_section,
+    format.section_content.max_scenes_per_section,
+  );
+  // Save section plans
+  const sectionPlansSerialized: Record<string, ScenePlanV2[]> = {};
+  for (const [key, scenes] of sectionPlans) {
+    sectionPlansSerialized[String(key)] = scenes;
+  }
+  fs.writeFileSync(
+    path.join(outputDir, "section-plans.json"),
+    JSON.stringify(sectionPlansSerialized, null, 2),
+  );
+  let totalScenes = 0;
+  for (const scenes of sectionPlans.values()) totalScenes += scenes.length;
+  console.log(`  Done: ${totalScenes} scenes across ${sectionPlans.size} sections\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 4: Generate voice + source section images (PARALLEL)
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 4/10] Generating voice & sourcing images (parallel)...");
+
+  // Collect all scenes for image sourcing
+  const allScenes: ScenePlanV2[] = [];
+  const sceneToSection: number[] = []; // maps scene index → section key
+  for (const [key, scenes] of sectionPlans) {
+    for (const scene of scenes) {
+      allScenes.push(scene);
+      sceneToSection.push(key);
+    }
+  }
+
+  const [voiceResult, allImages] = await Promise.all([
+    generateVoice(script.fullNarration, config.voice),
+    sourceImagesForScenesV2(allScenes, path.join(outputDir, "scenes")),
+  ]);
+
+  fs.writeFileSync(path.join(outputDir, "voice.mp3"), voiceResult.audioBuffer);
+  fs.writeFileSync(
+    path.join(outputDir, "timestamps.json"),
+    JSON.stringify(voiceResult.wordTimestamps, null, 2),
+  );
+  console.log(`  Voice: ${voiceResult.durationSeconds.toFixed(1)}s`);
+  console.log(`  Images: ${allImages.length} sourced\n`);
+
+  // Redistribute images back to section map
+  const sectionImages = new Map<number, SourcedImageV2[]>();
+  for (let i = 0; i < allImages.length; i++) {
+    const key = sceneToSection[i];
+    if (!sectionImages.has(key)) sectionImages.set(key, []);
+    sectionImages.get(key)!.push(allImages[i]);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 5: Structural alignment
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 5/10] Building structural timeline...");
+  const timeline = alignStructuralTimeline(
+    script,
+    sectionPlans,
+    voiceResult.wordTimestamps,
+    format,
+    fps,
+  );
+  fs.writeFileSync(
+    path.join(outputDir, "timeline.json"),
+    JSON.stringify(timeline, null, 2),
+  );
+  const totalFrames = calculateTotalFramesFromTimeline(timeline);
+  console.log(`  ${timeline.length} segments, ${totalFrames} frames (${(totalFrames / fps).toFixed(1)}s)\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 6: Build Remotion data
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 6/10] Building Remotion render data...");
+  const remotionData = buildRemotionDataV2(
+    timeline,
+    sectionImages,
+    gridCellArt,
+    voiceResult.wordTimestamps,
+    format,
+    fps,
+  );
+  fs.writeFileSync(
+    path.join(outputDir, "remotion-data-v2.json"),
+    JSON.stringify(remotionData, null, 2),
+  );
+  console.log(`  ${remotionData.segments.length} segments ready\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 7: Render visual track with Remotion
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 7/10] Rendering visual track (Remotion v2)...");
+  const visualTrackPath = path.join(outputDir, "visual_track.mp4");
+  await renderVideoWithRemotionV2(remotionData, visualTrackPath);
+  console.log(`  Done: Visual track rendered\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 8: Assemble final video with FFmpeg
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 8/10] Assembling final video (FFmpeg)...");
+  const musicTrack = selectMusicTrack([], config.music);
+  const finalVideoPath = path.join(outputDir, "final.mp4");
+  await assembleWithFFmpeg(
+    visualTrackPath,
+    path.join(outputDir, "voice.mp3"),
+    musicTrack,
+    finalVideoPath,
+  );
+  console.log(`  Done: Final video assembled\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 9: Generate thumbnail + metadata + captions
+  // ═══════════════════════════════════════════════════════════════
+  console.log("[Step 9/10] Generating thumbnail, metadata & captions...");
+  const thumbnailPath = path.join(outputDir, "thumbnail.png");
+
+  // Use grid cell art as thumbnail images
+  const thumbnailImages = gridCellArt
+    .filter((c) => c.localPath && fs.existsSync(c.localPath))
+    .map((c) => ({ path: c.localPath, label: c.topicName }));
+  await generateThumbnail(script.title, thumbnailImages, thumbnailPath);
+
+  const metadata = await generateMetadata(script, topic, config.upload);
+  const srt = generateSRT(voiceResult.wordTimestamps);
+  fs.writeFileSync(
+    path.join(outputDir, "metadata.json"),
+    JSON.stringify(metadata, null, 2),
+  );
+  fs.writeFileSync(path.join(outputDir, "captions.srt"), srt);
+  console.log(`  Done: Thumbnail, metadata and captions ready\n`);
+
+  // ═══════════════════════════════════════════════════════════════
+  // STEP 10: Upload (optional)
+  // ═══════════════════════════════════════════════════════════════
+  if (process.env.AUTO_UPLOAD === "true") {
+    console.log("[Step 10/10] Uploading to YouTube...");
+    const youtubeId = await uploadToYouTube(
+      finalVideoPath,
+      thumbnailPath,
+      metadata,
+    );
+    console.log(
+      `  Done: Uploaded → https://youtube.com/watch?v=${youtubeId}\n`,
+    );
+  } else {
+    console.log("[Step 10/10] Upload skipped (AUTO_UPLOAD not enabled)\n");
+  }
+
+  console.log(`════════════════════════════════════════`);
+  console.log(`  VIDEO COMPLETE (v2)`);
+  console.log(`  Output: ${outputDir}/final.mp4`);
+  console.log(`════════════════════════════════════════\n`);
 
   return { videoId, outputDir, finalVideoPath };
 }

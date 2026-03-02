@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { ScenePlan, CameraConfig, Mood, TopicListItem } from "./types.js";
+import type { ScenePlanV2, CameraTypeV2, MoodV2, ParsedScript } from "../../core/types-v2.js";
 
 const SCENE_PLANNER_SYSTEM_PROMPT = `You are a visual director for "The Paint Explainer" — a minimalist doodle animation style. You receive a narration script and break it into visual scenes, outputting a JSON array.
 
@@ -435,4 +436,216 @@ export async function planScenes(
   });
 
   return scenes;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// V2 Scene Planning — Per-Section, Multi-Type
+// ═══════════════════════════════════════════════════════════════════
+
+const SECTION_SCENE_PLANNER_PROMPT = `You are a visual director for YouTube explainer videos. You receive the narration text for ONE section of a "Top N" video and plan the visual scenes for that section ONLY.
+
+CONTEXT: Grid transitions, number cards, and section bridges are handled automatically. You are ONLY planning what appears DURING the explanation of this specific topic.
+
+AVAILABLE SCENE TYPES:
+
+1. "real_photo" — Use for SPECIFIC, NAMED real-world things.
+   The viewer needs to SEE this actual thing. You provide a precise search query.
+   USE FOR: named locations, famous experiments, specific animals/species,
+   historical events, named structures, specific technology, named people/scientists.
+   SEARCH QUERY: Be EXTREMELY specific — "Hubble Space Telescope in orbit" not "telescope".
+
+2. "ai_illustration" — Use for things that CANNOT be photographed.
+   Concepts, hypothetical scenarios, artistic visualizations.
+   USE FOR: theoretical concepts, microscopic/atomic scale, far future scenarios,
+   artistic interpretations, "imagine this" moments, cutaway views.
+   DESCRIPTION: Describe the SCENE (20-40 words), include lighting and mood.
+
+3. "cinematic_ai" — Use for dramatic "wow" moments.
+   Like ai_illustration but with cinematic/photorealistic style.
+   USE FOR: opening dramatic shot of a section, key visual climax.
+   DESCRIPTION: Describe as a movie shot (20-40 words).
+
+4. "diagram" — Use for processes, comparisons, scale, timelines.
+   An SVG diagram will be generated. Describe what it should show.
+   USE FOR: step-by-step processes, size comparisons, timelines, statistics.
+   DESCRIPTION: What to SHOW + layout + what text labels are needed.
+
+5. "text_card" — Use for dramatic statements, statistics, quotes.
+   Big bold text on screen. Maximum 12 words. Use sparingly (max 1 per section).
+
+CAMERA TYPES:
+- "zoom_in" — gentle push in (default)
+- "zoom_in_dramatic" — strong push in, for impact
+- "zoom_out" — start tight, reveal wider
+- "pan_left" / "pan_right" — horizontal drift
+- "pan_down" / "pan_up" — vertical drift
+- "pan_and_zoom" — diagonal drift + slow zoom, most cinematic
+- "static" — no movement (for diagrams and text cards only)
+
+OUTPUT FORMAT — return a JSON array:
+[
+  {
+    "scene_type": "real_photo|ai_illustration|diagram|text_card|cinematic_ai",
+    "narration_text": "exact words spoken during this scene",
+    "duration_estimate_seconds": 8,
+    "image_search_query": "specific Pexels search query (real_photo only, empty for others)",
+    "ai_image_prompt": "detailed visual description (ai_illustration/cinematic_ai only, empty for others)",
+    "diagram_description": "what the diagram should show (diagram only, empty for others)",
+    "text_card_content": "the text to display (text_card only, empty for others)",
+    "camera": {"type": "zoom_in"},
+    "mood": "mysterious|dramatic|wonder|tense|calm|exciting|triumphant|dark"
+  }
+]
+
+RULES:
+- Use real_photo for 40-50% of scenes
+- Use ai_illustration/cinematic_ai for 30-40%
+- Use diagram for 0-15%, text_card for 0-10%
+- EVERY word of narration must be assigned to exactly one scene
+- Alternate camera types — never use the same camera twice in a row
+- Diagrams and text cards always use "static" camera
+- Start each section with a visually striking scene
+- Return ONLY valid JSON. No markdown fences. No commentary.`;
+
+const VALID_SCENE_TYPES_V2 = new Set([
+  "real_photo", "ai_illustration", "cinematic_ai", "diagram", "text_card",
+]);
+
+const VALID_CAMERA_TYPES_V2 = new Set([
+  "zoom_in", "zoom_in_dramatic", "zoom_out",
+  "pan_left", "pan_right", "pan_up", "pan_down",
+  "pan_and_zoom", "static",
+]);
+
+const VALID_MOODS_V2 = new Set([
+  "mysterious", "dramatic", "wonder", "tense", "calm", "exciting", "triumphant", "dark",
+]);
+
+function validateSceneTypeV2(s: unknown): ScenePlanV2["scene_type"] {
+  if (typeof s === "string" && VALID_SCENE_TYPES_V2.has(s)) return s as ScenePlanV2["scene_type"];
+  return "real_photo";
+}
+
+function validateCameraV2(cam: unknown): { type: CameraTypeV2 } {
+  if (!cam || typeof cam !== "object") return { type: "zoom_in" };
+  const t = (cam as Record<string, unknown>).type;
+  if (typeof t === "string" && VALID_CAMERA_TYPES_V2.has(t)) return { type: t as CameraTypeV2 };
+  return { type: "zoom_in" };
+}
+
+function validateMoodV2(m: unknown): MoodV2 {
+  if (typeof m === "string" && VALID_MOODS_V2.has(m)) return m as MoodV2;
+  return "mysterious";
+}
+
+/**
+ * Plan scenes for a single section of the video.
+ */
+export async function planSectionScenes(
+  sectionNarration: string,
+  sectionIndex: number,
+  topicName: string,
+  minScenes: number,
+  maxScenes: number,
+): Promise<ScenePlanV2[]> {
+  const client = new Anthropic();
+  const wordCount = sectionNarration.split(/\s+/).filter(Boolean).length;
+
+  const userPrompt = `Plan the visual scenes for this section of the video.
+
+SECTION TOPIC: "${topicName}"
+SECTION NUMBER: ${sectionIndex + 1}
+
+NARRATION TEXT FOR THIS SECTION:
+${sectionNarration}
+
+The narration contains approximately ${wordCount} words.
+Plan ${minScenes}-${maxScenes} scenes.
+Every word of the narration must be covered by exactly one scene.
+
+Return ONLY the JSON array.`;
+
+  const stream = client.messages.stream({
+    model: "claude-sonnet-4-5-20250929",
+    max_tokens: 8000,
+    system: SECTION_SCENE_PLANNER_PROMPT,
+    messages: [{ role: "user", content: userPrompt }],
+  });
+
+  const response = await stream.finalMessage();
+  const rawText = response.content[0].type === "text" ? response.content[0].text : "[]";
+  const parsed = parseClaudeJSON(rawText);
+
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error(`Scene planner returned invalid data for section "${topicName}"`);
+  }
+
+  return parsed.map((scene: Record<string, unknown>, idx: number) => ({
+    scene_id: `s${sectionIndex}_${idx}`,
+    scene_type: validateSceneTypeV2(scene.scene_type),
+    narration_text: typeof scene.narration_text === "string" ? scene.narration_text : "",
+    duration_estimate_seconds: clampDuration(scene.duration_estimate_seconds),
+    image_search_query: typeof scene.image_search_query === "string" ? scene.image_search_query : "",
+    ai_image_prompt: typeof scene.ai_image_prompt === "string" ? scene.ai_image_prompt : "",
+    diagram_description: typeof scene.diagram_description === "string" ? scene.diagram_description : undefined,
+    text_card_content: typeof scene.text_card_content === "string" ? scene.text_card_content : undefined,
+    camera: validateCameraV2(scene.camera),
+    mood: validateMoodV2(scene.mood),
+  }));
+}
+
+/**
+ * Plan scenes for ALL sections of the video, calling Claude once per section.
+ */
+export async function planAllSections(
+  script: ParsedScript,
+  minScenesPerSection: number,
+  maxScenesPerSection: number,
+): Promise<Map<number, ScenePlanV2[]>> {
+  const sectionPlans = new Map<number, ScenePlanV2[]>();
+
+  for (const topic of script.subTopics) {
+    console.log(`[scene-planner-v2] Planning section ${topic.index + 1}/${script.subTopics.length}: "${topic.name}"`);
+
+    const scenes = await planSectionScenes(
+      topic.narrationText,
+      topic.index,
+      topic.name,
+      minScenesPerSection,
+      maxScenesPerSection,
+    );
+
+    sectionPlans.set(topic.index, scenes);
+    console.log(`[scene-planner-v2]   → ${scenes.length} scenes planned`);
+  }
+
+  // Also plan hook scenes
+  if (script.hook) {
+    console.log(`[scene-planner-v2] Planning hook scenes...`);
+    const hookScenes = await planSectionScenes(
+      script.hook,
+      -1,
+      "_hook",
+      1,
+      3,
+    );
+    sectionPlans.set(-1, hookScenes);
+    console.log(`[scene-planner-v2]   → ${hookScenes.length} hook scenes`);
+  }
+
+  // Plan outro scenes
+  if (script.outro) {
+    console.log(`[scene-planner-v2] Planning outro scenes...`);
+    const outroScenes = await planSectionScenes(
+      script.outro,
+      -2,
+      "_outro",
+      1,
+      2,
+    );
+    sectionPlans.set(-2, outroScenes);
+    console.log(`[scene-planner-v2]   → ${outroScenes.length} outro scenes`);
+  }
+
+  return sectionPlans;
 }

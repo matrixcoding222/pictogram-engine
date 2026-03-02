@@ -75,6 +75,66 @@ export async function generateAIImage(prompt: string): Promise<Buffer> {
   return buffer;
 }
 
+/**
+ * Generate an AI image at 1:1 aspect ratio (for grid cells).
+ */
+export async function generateAIImageSquare(prompt: string): Promise<Buffer> {
+  const apiToken = process.env.REPLICATE_API_TOKEN;
+  if (!apiToken) {
+    throw new Error("REPLICATE_API_TOKEN environment variable is not set.");
+  }
+
+  const replicate = new Replicate({ auth: apiToken });
+
+  console.log(`[flux-ai] Generating square image (prompt: ${prompt.slice(0, 80)}...)`);
+
+  const input = {
+    prompt,
+    aspect_ratio: "1:1",
+    output_format: "png",
+    output_quality: 90,
+    num_inference_steps: 28,
+    guidance_scale: 3.5,
+  };
+
+  let output: unknown;
+  try {
+    output = await replicate.run(FLUX_MODEL, { input });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`[flux-ai] Replicate API call failed: ${message}`);
+  }
+
+  const imageUrl = resolveOutputUrl(output);
+  if (!imageUrl) {
+    throw new Error(`[flux-ai] Unexpected output format from Replicate: ${JSON.stringify(output).slice(0, 200)}`);
+  }
+
+  const imageResponse = await fetch(imageUrl);
+  if (!imageResponse.ok) {
+    throw new Error(`[flux-ai] Failed to download generated image (${imageResponse.status})`);
+  }
+
+  const arrayBuffer = await imageResponse.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+}
+
+/**
+ * Generate an AI image with a style suffix appended (for section content).
+ */
+export async function generateStyledAIImage(
+  prompt: string,
+  style: "illustration" | "cinematic",
+): Promise<Buffer> {
+  const styleSuffixes = {
+    illustration: ", digital illustration, detailed, vibrant colors, dramatic lighting, concept art style, high quality",
+    cinematic: ", cinematic photorealistic, dramatic lighting, 8k, volumetric lighting, wide angle lens, movie still quality, epic scale",
+  };
+
+  const fullPrompt = prompt + styleSuffixes[style];
+  return generateAIImage(fullPrompt);
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

@@ -1,32 +1,86 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { ScriptConfig, GeneratedScript, SubTopic } from "./types.js";
+import type { ScriptConfig } from "./types.js";
+import type { ParsedScript, SubTopicV2 } from "../../core/types-v2.js";
 
-const SCRIPT_SYSTEM_PROMPT = `You are the head scriptwriter for a YouTube channel that explains intriguing scientific theories and phenomena. You write narration scripts that are spoken as voiceover.
+const SCRIPT_SYSTEM_PROMPT = `You are the head scriptwriter for a YouTube channel that creates "Top N" list videos about science and the unexplained. You write narration scripts that are spoken as voiceover over visually rich content.
+
+UNDERSTANDING THE VIDEO FORMAT:
+This script will be turned into a video with this visual structure:
+- A MASTER GRID shows cartoon depictions of all items (like a table of contents)
+- The camera ZOOMS INTO each grid cell when transitioning to a new item
+- Each section has its own visual content (photos, illustrations, diagrams)
+- The camera PULLS BACK to the grid between sections
+- A NUMBER CARD ("#5", "#4", etc.) appears before each section
+
+Your script must work with this visual system.
 
 VOICE & TONE:
-- Curious, slightly dramatic, but never sensationalized
+- Curious, slightly dramatic, never sensationalized
 - Explain to an intelligent friend who isn't a scientist
-- Use vivid analogies: "Imagine shrinking yourself down to the size of an atom. At this scale, the solid table in front of you would look like a vast, mostly empty cathedral..."
+- Use vivid analogies and thought experiments
 - Vary sentence length — short punchy for impact, longer for explanation
 - Express genuine wonder. Admit when something is unknown or debated.
 - Never use: "In this video", "Let's dive in", "Without further ado"
 
 STRUCTURE:
-1. HOOK (first 15 seconds): A provocative question, mind-blowing statement, or "what if" scenario. Must grab attention IMMEDIATELY.
-2. BODY: Cover the sub-topics, each with its own mini-arc (setup → explanation → payoff). Between sub-topics, use anticipation bridges: "But that's not even the strangest part..." / "And this is where things get really weird..." / "Now, if you think that was unsettling..."
-3. BUILD: Arrange sub-topics so the most mind-blowing one comes near the end.
-4. CLOSE: Thought-provoking reflection + natural subscribe CTA woven into narration.
 
-Mark your script with:
-- [SCENE BREAK] where the visual should change (roughly every 20-40 words)
-- [TOPIC: Topic Name] at the start of each sub-topic section
+1. HOOK (first 15-20 seconds, 40-50 words):
+   A provocative question, mind-blowing statement, or "what if" scenario.
+   Must grab attention IMMEDIATELY. This plays over dramatic imagery.
+   End the hook with a clear transition to the list.
 
-OUTPUT: Return ONLY the spoken narration text with markers. Nothing else. No stage directions, no visual descriptions.`;
+2. OVERVIEW (1-2 sentences, 15-25 words):
+   Brief line that transitions from the hook to the list.
+   This plays while the master grid is being revealed.
+   Example: "From the bizarre to the terrifying, here are five discoveries that changed everything."
+
+3. NUMBERED SECTIONS (one per sub-topic):
+   Each section follows this internal structure:
+
+   a) OPENING STATEMENT (1-2 sentences): Sets up what this item is.
+      This plays right after the number card and grid zoom.
+
+   b) EXPLANATION (main body, 150-300 words): The meat of the section.
+      Include specific details, dates, names, locations — things that
+      can be visualized with real photos or illustrations.
+      IMPORTANT: Write with visual scenes in mind. Every 25-40 words,
+      the visual will change, so reference specific visualizable things.
+
+   c) PAYOFF (1-2 sentences): The "wow" moment or key takeaway.
+
+   d) BRIDGE TO NEXT (1 sentence, after the section): Builds anticipation for the next item.
+      Examples: "But that's not even the strangest part..."
+      "If you thought that was unsettling, wait until you hear this..."
+      The bridge plays as the camera pulls back to the grid.
+      The LAST section does NOT have a bridge — it transitions to the outro.
+
+4. ARRANGE BY IMPACT:
+   The list should build in intensity. The most mind-blowing item comes LAST.
+
+5. OUTRO (15-25 words):
+   Thought-provoking reflection that ties back to the hook.
+   Weave in a natural subscribe CTA. No "smash that like button."
+
+MARKERS — use these EXACTLY:
+- [HOOK] at the very start
+- [OVERVIEW] before the overview bridge sentence
+- [TOPIC: Full Topic Name] at the start of each numbered section
+- [SCENE BREAK] where the visual should change (every 25-40 words within sections)
+- [BRIDGE] before each between-section bridge line
+- [OUTRO] before the outro
+
+CRITICAL RULES:
+- Target word count: {targetWords} words total
+- Exactly {subTopicCount} sub-topics
+- Every sub-topic section must reference 3-6 specific, visualizable things
+- The overview must be short enough for a 3-5 second grid reveal
+- Bridges between sections must be exactly 1 sentence
+- Write ONLY the spoken narration. No stage directions. No visual descriptions.
+
+OUTPUT: Return ONLY the narration text with the markers above. Nothing else.`;
 
 /**
  * Capitalizes words in a topic string for use as a video title.
- * Lowercases minor words (articles, conjunctions, short prepositions)
- * unless they are the first or last word of the title.
  */
 function toTitleCase(text: string): string {
   const minorWords = new Set([
@@ -40,31 +94,20 @@ function toTitleCase(text: string): string {
   return words
     .map((word, index) => {
       const lower = word.toLowerCase();
-
-      // Always capitalize first and last word
       if (index === 0 || index === words.length - 1) {
         return lower.charAt(0).toUpperCase() + lower.slice(1);
       }
-
-      // Keep minor words lowercase
       if (minorWords.has(lower)) {
         return lower;
       }
-
-      // Capitalize everything else
       return lower.charAt(0).toUpperCase() + lower.slice(1);
     })
     .join(" ");
 }
 
-/**
- * Generates a properly formatted title from a topic string.
- * Truncates to 60 characters max (with ellipsis) and applies title casing.
- */
 function generateTitle(topic: string): string {
   const titled = toTitleCase(topic);
   if (titled.length > 60) {
-    // Truncate at the last word boundary before 57 characters
     const truncated = titled.substring(0, 57);
     const lastSpace = truncated.lastIndexOf(" ");
     if (lastSpace > 30) {
@@ -76,63 +119,117 @@ function generateTitle(topic: string): string {
 }
 
 /**
- * Parses a raw script containing [TOPIC:] and [SCENE BREAK] markers
- * into structured sub-topics and clean narration text.
+ * Parses a raw script containing v2 markers into the ParsedScript structure.
+ * Markers: [HOOK], [OVERVIEW], [TOPIC: Name], [SCENE BREAK], [BRIDGE], [OUTRO]
  */
-function parseScript(rawText: string): { subTopics: SubTopic[]; fullNarration: string } {
-  const subTopics: SubTopic[] = [];
-  const topicRegex = /\[TOPIC:\s*(.+?)\]/g;
+function parseScriptV2(rawText: string): Omit<ParsedScript, "title"> {
+  let hook = "";
+  let overview = "";
+  const subTopics: SubTopicV2[] = [];
+  const bridges: string[] = [];
+  let outro = "";
 
-  // Check if any [TOPIC:] markers exist
-  const hasTopicMarkers = topicRegex.test(rawText);
-  topicRegex.lastIndex = 0; // Reset regex state after test
+  // Split the text by all major markers
+  const markerRegex = /\[(HOOK|OVERVIEW|TOPIC:\s*.+?|BRIDGE|OUTRO)\]/g;
+  const parts: Array<{ marker: string; text: string }> = [];
 
-  if (!hasTopicMarkers) {
-    // No markers found: treat the entire text as a single section
-    const cleaned = rawText.replace(/\[SCENE BREAK\]/g, "").trim();
-    subTopics.push({ name: "Main", narrationText: cleaned });
-    return { subTopics, fullNarration: cleaned };
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = markerRegex.exec(rawText)) !== null) {
+    // Capture text before this marker (if any, belongs to previous marker)
+    if (parts.length > 0 && lastIndex < match.index) {
+      parts[parts.length - 1].text += rawText.substring(lastIndex, match.index);
+    } else if (lastIndex < match.index) {
+      // Text before the first marker (pre-hook)
+      const preText = rawText.substring(lastIndex, match.index).trim();
+      if (preText) {
+        parts.push({ marker: "PRE", text: preText });
+      }
+    }
+
+    parts.push({ marker: match[1], text: "" });
+    lastIndex = match.index + match[0].length;
   }
 
-  const sections = rawText.split(topicRegex);
-  let fullNarration = "";
+  // Remaining text after last marker
+  if (parts.length > 0 && lastIndex < rawText.length) {
+    parts[parts.length - 1].text += rawText.substring(lastIndex);
+  }
 
-  for (let i = 0; i < sections.length; i++) {
-    if (i % 2 === 0) {
-      // Content section (either hook or body content following a topic name)
-      const cleaned = sections[i].replace(/\[SCENE BREAK\]/g, "").trim();
-      if (cleaned) fullNarration += cleaned + " ";
-    } else {
-      // Topic name (odd indices from split are the capture groups)
-      const topicName = sections[i].trim();
-      const content = sections[i + 1]
-        ? sections[i + 1].replace(/\[SCENE BREAK\]/g, "").trim()
-        : "";
-      subTopics.push({ name: topicName, narrationText: content });
+  // Process each part
+  let topicIndex = 0;
+  for (const part of parts) {
+    const cleanedText = part.text
+      .replace(/\[SCENE BREAK\]/g, "")
+      .trim();
+
+    if (part.marker === "HOOK" || part.marker === "PRE") {
+      hook = cleanedText;
+    } else if (part.marker === "OVERVIEW") {
+      overview = cleanedText;
+    } else if (part.marker.startsWith("TOPIC:")) {
+      const topicName = part.marker.replace(/^TOPIC:\s*/, "").trim();
+      subTopics.push({
+        index: topicIndex,
+        name: topicName,
+        narrationText: cleanedText,
+      });
+      topicIndex++;
+    } else if (part.marker === "BRIDGE") {
+      bridges.push(cleanedText);
+    } else if (part.marker === "OUTRO") {
+      outro = cleanedText;
     }
   }
 
-  fullNarration = fullNarration.trim();
-  return { subTopics, fullNarration };
+  // Build fullNarration — all sections concatenated in order
+  const narrationParts: string[] = [];
+  if (hook) narrationParts.push(hook);
+  if (overview) narrationParts.push(overview);
+  for (let i = 0; i < subTopics.length; i++) {
+    if (subTopics[i].narrationText) {
+      narrationParts.push(subTopics[i].narrationText);
+    }
+    if (i < bridges.length && bridges[i]) {
+      narrationParts.push(bridges[i]);
+    }
+  }
+  if (outro) narrationParts.push(outro);
+
+  const fullNarration = narrationParts.join(" ").replace(/\s+/g, " ").trim();
+  const wordCount = fullNarration.split(/\s+/).filter(Boolean).length;
+
+  return {
+    hook,
+    overview,
+    subTopics,
+    bridges,
+    outro,
+    fullNarration,
+    wordCount,
+  };
 }
 
 /**
- * Calls the Claude API to generate a narration script for the given topic
- * using the channel's script configuration, then parses the result into
- * structured data.
+ * Calls Claude to generate a format-aware narration script for a "Top N" video,
+ * then parses it into the ParsedScript structure.
  */
 export async function generateScript(
   topic: string,
   config: ScriptConfig,
-): Promise<GeneratedScript> {
+): Promise<ParsedScript> {
   const client = new Anthropic();
   const targetWords = config.target_duration_minutes * config.words_per_minute;
 
-  // Use streaming to avoid SDK timeout for large requests
+  const prompt = SCRIPT_SYSTEM_PROMPT
+    .replace("{targetWords}", String(targetWords))
+    .replace("{subTopicCount}", String(config.sub_topics_per_video));
+
   const stream = client.messages.stream({
     model: config.model,
     max_tokens: 16000,
-    system: SCRIPT_SYSTEM_PROMPT,
+    system: prompt,
     messages: [
       {
         role: "user",
@@ -152,15 +249,12 @@ export async function generateScript(
     );
   }
 
-  const { subTopics, fullNarration } = parseScript(rawText);
-  const wordCount = fullNarration.split(/\s+/).filter(Boolean).length;
+  const parsed = parseScriptV2(rawText);
   const title = generateTitle(topic);
 
   return {
     title,
     fullText: rawText,
-    fullNarration,
-    wordCount,
-    subTopics,
+    ...parsed,
   };
 }
