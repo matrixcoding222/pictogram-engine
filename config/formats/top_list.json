@@ -36,8 +36,8 @@
   },
 
   "section_content": {
-    "min_scenes_per_section": 3,
-    "max_scenes_per_section": 8,
+    "min_scenes_per_section": 2,
+    "max_scenes_per_section": 3,
     "image_style_suffixes": {
       "ai_illustration": "digital illustration, vibrant colors, cartoon style, thick outlines, educational style, clean white or light background, concept art",
       "cinematic_ai": "detailed realistic illustration, educational style, vibrant colors, clean composition, soft lighting, white background elements"

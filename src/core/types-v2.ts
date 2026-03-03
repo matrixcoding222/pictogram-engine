@@ -132,6 +132,8 @@ export interface AlignedSceneV2 extends ScenePlanV2 {
 
 // === GRID ART ===
 
+export type GridSourceType = "real_photo" | "ai_illustration";
+
 export interface ArtDirection {
   topic: string;
   visual_description: string;
@@ -140,6 +142,7 @@ export interface ArtDirection {
 }
 
 export interface ArtDirectionResult {
+  grid_source: GridSourceType;
   cells: ArtDirection[];
 }
 
@@ -147,7 +150,7 @@ export interface GridCellArt {
   cellIndex: number;
   topicName: string;
   localPath: string;
-  source: "flux_ai" | "pexels_fallback" | "none";
+  source: "flux_ai" | "none";
   artDirection?: ArtDirection;
 }
 
@@ -178,6 +181,5 @@ export interface TimelineSegment {
 
 export interface SourcedImageV2 {
   localPath: string;
-  source: "flux_ai_illustration" | "flux_ai_cinematic" | "diagram" | "text_card" | "none";
-  attribution?: string;
+  source: "flux_ai_photorealistic" | "flux_ai_illustration" | "flux_ai_cinematic" | "diagram" | "text_card" | "none";
 }

@@ -6,8 +6,8 @@
 
   "script": {
     "model": "claude-sonnet-4-5-20250929",
-    "target_duration_minutes": 10,
-    "sub_topics_per_video": 5,
+    "target_duration_minutes": 1.5,
+    "sub_topics_per_video": 3,
     "words_per_minute": 150
   },
 

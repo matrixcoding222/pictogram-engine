@@ -503,6 +503,13 @@ function buildRemotionDataV2(
  * Step 9:  Generate thumbnail + metadata + captions
  * Step 10: Upload (optional)
  */
+function calculateGridColumns(topicCount: number): number {
+  if (topicCount <= 3) return 2;
+  if (topicCount <= 6) return 3;
+  if (topicCount <= 8) return 4;
+  return 5;
+}
+
 export async function generateVideoV2(topic: string) {
   const config = loadConfig(PROJECT_ROOT);
   const format = loadFormatTemplate(config.default_format, PROJECT_ROOT);
@@ -532,7 +539,11 @@ export async function generateVideoV2(topic: string) {
   console.log(`  Title: "${script.title}"`);
   console.log(`  ${script.wordCount} words, ${script.subTopics.length} sub-topics`);
   console.log(`  Hook: ${script.hook.split(/\s+/).length} words`);
-  console.log(`  Bridges: ${script.bridges.length}\n`);
+  console.log(`  Bridges: ${script.bridges.length}`);
+
+  // Dynamic grid columns based on topic count
+  format.grid.columns = calculateGridColumns(script.subTopics.length);
+  console.log(`  Grid: ${format.grid.columns} columns (${script.subTopics.length} topics)\n`);
 
   // ═══════════════════════════════════════════════════════════════
   // STEP 2: Generate grid cell art
@@ -545,17 +556,16 @@ export async function generateVideoV2(topic: string) {
     JSON.stringify(artDirection, null, 2),
   );
 
-  console.log("  Generating cell images with FLUX...");
+  console.log(`  Grid source: ${artDirection.grid_source}`);
+  console.log("  Generating cell images...");
   const gridCellArt = await generateAllGridArt(
     artDirection,
     format.grid,
     path.join(outputDir, "grid-cells"),
   );
   const gridSuccess = gridCellArt.filter((c) => c.source !== "none").length;
-  const gridFlux = gridCellArt.filter((c) => c.source === "flux_ai").length;
   const gridFailed = gridCellArt.filter((c) => c.source === "none").length;
-  console.log(`  Done: ${gridSuccess}/${gridCellArt.length} grid cells generated`);
-  if (gridFlux > 0) console.log(`    🎨 FLUX AI: ${gridFlux}`);
+  console.log(`  Done: ${gridSuccess}/${gridCellArt.length} grid cells generated (${artDirection.grid_source})`);
   if (gridFailed > 0) console.log(`    ❌ Placeholder: ${gridFailed}`);
   console.log();
 
@@ -696,7 +706,7 @@ export async function generateVideoV2(topic: string) {
   const thumbnailImages = gridCellArt
     .filter((c) => c.localPath && fs.existsSync(c.localPath))
     .map((c) => ({ path: c.localPath, label: c.topicName }));
-  await generateThumbnail(script.title, thumbnailImages, thumbnailPath);
+  await generateThumbnail(script.title, thumbnailImages, thumbnailPath, format.grid.columns);
 
   const metadata = await generateMetadata(script, topic, config.upload);
   const srt = generateSRT(voiceResult.wordTimestamps);

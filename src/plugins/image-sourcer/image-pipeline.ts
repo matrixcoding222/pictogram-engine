@@ -5,7 +5,7 @@ import sharp from "sharp";
 import type { ScenePlan } from "../scene-planner/types.js";
 import type { ImageSourcingConfig, SourcedImage } from "./types.js";
 import type { ScenePlanV2, SourcedImageV2 } from "../../core/types-v2.js";
-import { searchPexels } from "./pexels.js"; // Used by V1 pipeline (kept for backward compat)
+import { searchPexels } from "./pexels.js";
 import { generateAIImage, generateStyledAIImage } from "./flux-ai.js";
 import { generateDiagram } from "./diagram-generator.js";
 
@@ -257,7 +257,7 @@ export async function sourceImagesForScenesV2(
   fs.mkdirSync(outputDir, { recursive: true });
   const results: SourcedImageV2[] = [];
 
-  console.log(`[image-pipeline-v2] Generating images for ${scenes.length} scenes (all AI-generated)`);
+  console.log(`[image-pipeline-v2] Sourcing images for ${scenes.length} scenes (FLUX + diagrams)`);
 
   for (let i = 0; i < scenes.length; i++) {
     const scene = scenes[i];
@@ -266,14 +266,12 @@ export async function sourceImagesForScenesV2(
     try {
       switch (scene.scene_type) {
         case "real_photo": {
-          // "real_photo" = photorealistic AI image of the actual subject
-          // Uses the visual description (ai_image_prompt) NOT a search query
-          const prompt = scene.ai_image_prompt || scene.image_search_query || scene.narration_text.slice(0, 120);
-          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: FLUX photorealistic → "${prompt.slice(0, 60)}..."`);
-          const raw = await generateStyledAIImage(prompt, "cinematic");
+          // Photorealistic AI image via FLUX
+          console.log(`[image-pipeline-v2] Scene ${scene.scene_id}: FLUX photorealistic`);
+          const raw = await generateStyledAIImage(scene.ai_image_prompt, "cinematic");
           const processed = await processImageV2(raw);
           fs.writeFileSync(outputPath, processed);
-          results.push({ localPath: outputPath, source: "flux_ai_cinematic" });
+          results.push({ localPath: outputPath, source: "flux_ai_photorealistic" });
           break;
         }
 

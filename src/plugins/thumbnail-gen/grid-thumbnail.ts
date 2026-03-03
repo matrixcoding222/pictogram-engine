@@ -18,15 +18,14 @@ export interface ThumbnailImage {
 // ---------------------------------------------------------------------------
 
 /**
- * Build a self-contained HTML string for the 3x3 grid thumbnail.
+ * Build a self-contained HTML string for a dynamic grid thumbnail.
  * All CSS is embedded inline so no external files are required.
  *
  * Images are referenced via `file://` so Playwright can load them from disk.
- * If fewer than 9 images are supplied the grid simply shows what is available.
+ * The grid adapts to the number of columns specified.
  */
-function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
-  // Limit to a maximum of 9 items for the 3x3 grid
-  const items = images.slice(0, 9);
+function buildThumbnailHTML(title: string, images: ThumbnailImage[], columns: number = 3): string {
+  const items = images;
 
   const cellsHTML = items
     .map((img) => {
@@ -41,6 +40,13 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
         </div>`;
     })
     .join("\n");
+
+  // Scale circle size based on column count
+  const circleSize = columns <= 3 ? 160 : columns === 4 ? 130 : 110;
+  const fontSize = columns <= 3 ? 16 : columns === 4 ? 14 : 12;
+  const labelWidth = columns <= 3 ? 180 : columns === 4 ? 150 : 120;
+  const gap = columns <= 3 ? "18px 32px" : columns === 4 ? "14px 24px" : "10px 16px";
+  const padding = columns <= 3 ? "40px 80px 20px 80px" : columns === 4 ? "30px 50px 15px 50px" : "20px 30px 10px 30px";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -63,9 +69,9 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px 32px;
-    padding: 40px 80px 20px 80px;
+    grid-template-columns: repeat(${columns}, 1fr);
+    gap: ${gap};
+    padding: ${padding};
     width: 100%;
     flex: 1;
     align-content: center;
@@ -76,12 +82,12 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .circle {
-    width: 160px;
-    height: 160px;
+    width: ${circleSize}px;
+    height: ${circleSize}px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
@@ -91,10 +97,10 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[]): string {
 
   .label {
     color: #333333;
-    font-size: 16px;
+    font-size: ${fontSize}px;
     font-weight: 700;
     text-align: center;
-    max-width: 180px;
+    max-width: ${labelWidth}px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -144,7 +150,7 @@ function escapeHTML(text: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Generate a 1280x720 YouTube thumbnail image with a 3x3 grid of
+ * Generate a 1280x720 YouTube thumbnail image with a dynamic grid of
  * circular-cropped images, each with a short text label, and a bold
  * title across the bottom.
  *
@@ -152,13 +158,15 @@ function escapeHTML(text: string): string {
  * dynamically built HTML page.
  *
  * @param title      The main title text displayed at the bottom.
- * @param images     Array of up to 9 images with labels for the grid.
+ * @param images     Array of images with labels for the grid.
  * @param outputPath Absolute path where the PNG thumbnail will be saved.
+ * @param columns    Number of grid columns (default 3).
  */
 export async function generateThumbnail(
   title: string,
   images: ThumbnailImage[],
   outputPath: string,
+  columns: number = 3,
 ): Promise<void> {
   if (images.length === 0) {
     throw new Error("At least one image is required to generate a thumbnail.");
@@ -170,7 +178,7 @@ export async function generateThumbnail(
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const html = buildThumbnailHTML(title, images);
+  const html = buildThumbnailHTML(title, images, columns);
 
   const browser = await chromium.launch({ headless: true });
   try {

@@ -35,12 +35,13 @@ async function main() {
   if (missing.length > 0) {
     console.error(`\n❌ Missing required environment variables: ${missing.join(", ")}`);
     if (missing.includes("REPLICATE_API_TOKEN")) {
-      console.error("\nREPLICATE_API_TOKEN is REQUIRED — all images are AI-generated via FLUX.");
+      console.error("\nREPLICATE_API_TOKEN is REQUIRED — AI images are generated via FLUX.");
       console.error("Get a token at: https://replicate.com/account/api-tokens");
     }
     console.error("\nCreate a .env file with your API keys.");
     process.exit(1);
   }
+
 
   try {
     const result = await generateVideoV2(topic);
