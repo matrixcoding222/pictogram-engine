@@ -118,44 +118,45 @@ Return ONLY the JSON array. No markdown fences. No commentary.`;
 // Cartoon Illustration Art Direction (for ai_illustration grids)
 // ---------------------------------------------------------------------------
 
-const ILLUSTRATION_ART_DIRECTOR_PROMPT = `You are a visual art director designing cartoon depictions for a video thumbnail grid. You will be given a list of topics. For each topic, describe EXACTLY what the cartoon image should depict.
+const ILLUSTRATION_ART_DIRECTOR_PROMPT = `You are a visual art director designing BOLD CARTOON images for a video thumbnail grid. These images have a very specific style: bright, saturated, flat cartoon illustrations on solid BLACK backgrounds. Think retro cartoon meets educational poster.
 
-CONSTRAINTS — every image in this grid must follow these rules:
+CONSTRAINTS — every image MUST follow these rules:
 - Single centered subject — ONE main object/figure/symbol per image
-- Same level of detail — if one is simple, all are simple
-- Clean white or light background (the grid has a whiteboard aesthetic)
-- Bold, vibrant, saturated colors — must pop on a small grid cell
-- No text in the image — labels are added separately
-- Square composition — subject fills most of the frame
-- Same artistic "weight" — no image should overwhelm or underwhelm the others
-- Cartoon/illustrated style — realistic depictions drawn in a fun, educational cartoon style
+- SOLID BLACK background — no gradients, no scenes, just pure black behind the subject
+- EXTREMELY vibrant, neon-saturated colors — electric blue, hot orange, bright red, vivid green, neon purple
+- FLAT shading — no realistic lighting, no 3D rendering, flat color blocks with thick black outlines
+- Bold, simple, iconic — recognizable even at tiny thumbnail size
+- Same level of detail across all cells — consistent style
+- No text in the image
+- Square composition — subject fills 70-80% of the frame
+
+STYLE REFERENCE: Think bold vector art, retro cartoon, almost like a stylized emoji or app icon. NOT realistic, NOT painterly, NOT detailed. SIMPLE, BOLD, FLAT, BRIGHT.
 
 YOUR JOB:
-For each topic, return a SHORT visual description (15-30 words) of what to depict.
-Focus on: the MAIN SUBJECT, its COLOR PALETTE, and any KEY VISUAL ELEMENT.
-
-Think about what a viewer would instantly recognize as representing this topic
-even at thumbnail size (small, 300x200 pixels).
+For each topic, describe the SINGLE SUBJECT to depict in 15-25 words.
+Focus on: what the MAIN SHAPE/OBJECT is, its PRIMARY COLORS (pick 2-3 neon/vibrant colors), and one KEY DETAIL.
 
 EXAMPLES:
-Topic: "Black Holes"
-→ "A massive swirling black void with bright orange accretion disk, surrounded by warped starlight against clean white background. Deep purples and fiery oranges."
+Topic: "HD 189733 b" (a planet)
+→ "A large blue sphere with swirling white storm bands, glowing hot orange atmosphere rim. Electric blue and fiery orange."
 
-Topic: "Boltzmann Brain"
-→ "A glowing translucent cartoon brain floating in space, with faint purple neural connections sparking. Eerie blue-purple glow, clean light background."
+Topic: "Rogue Planets"
+→ "A dark rocky planet drifting alone, one side lit with dim red glow, cracks of molten orange. Dark red and orange."
 
-Return a JSON array in this exact format:
+Topic: "Neutron Stars"
+→ "A small ultra-bright white-blue sphere with beams of light shooting from poles, surrounded by blue energy rings. White-blue and electric cyan."
+
+Return a JSON array:
 [
   {
     "topic": "exact topic name",
-    "visual_description": "15-30 word description of what to show",
-    "primary_colors": ["color1", "color2"],
+    "visual_description": "15-25 word description of the single subject to show",
+    "primary_colors": ["neon_color1", "neon_color2"],
     "subject_type": "object|creature|symbol|scene|phenomenon"
   }
 ]
 
-IMPORTANT: All descriptions must work together as a cohesive set.
-They should feel like the same artist designed all of them.
+IMPORTANT: Every description must produce images that look like they belong in the SAME SET — same artist, same style, same level of detail.
 Return ONLY the JSON array. No markdown fences. No commentary.`;
 
 // ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@
   "grid": {
     "columns": 3,
     "cell_art_resolution": 1024,
-    "cell_art_prompt_suffix": "digital illustration, thick black outlines, simple flat shading, vibrant colors, centered composition, clean white background, cartoon style, clean vector art, no text, square format",
+    "cell_art_prompt_suffix": "bold cartoon illustration, flat shading, thick black outlines, solid black background, extremely vibrant neon saturated colors, simple iconic centered subject, vector art style, no text, no gradients, clean flat color blocks, retro cartoon aesthetic, square format",
     "cell_border_color": "#d0d0d0",
     "cell_highlight_color": "#FF6B35",
     "background_color": "#FFFFFF"

@@ -123,7 +123,7 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
                 border: `${borderSize}px solid ${borderColor}`,
                 borderRadius: 14,
                 overflow: "hidden",
-                backgroundColor: "#f8f8f8",
+                backgroundColor: "#1a1a1a",
                 position: "relative",
                 boxShadow: isHighlighted
                   ? `0 6px 20px rgba(0,0,0,0.15)`
@@ -137,7 +137,7 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    filter: isCompleted ? "brightness(0.7) saturate(0.5)" : "none",
+                    filter: isCompleted ? "brightness(0.6) saturate(0.5)" : "none",
                   }}
                 />
               ) : (
@@ -145,10 +145,11 @@ export const MasterGrid: React.FC<MasterGridProps> = ({
                   style={{
                     width: "100%",
                     height: "100%",
+                    backgroundColor: "#1a1a1a",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: "#999",
+                    color: "#666",
                     fontSize: 20,
                     fontFamily: "Arial, sans-serif",
                   }}

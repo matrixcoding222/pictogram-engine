@@ -88,15 +88,15 @@ function buildThumbnailHTML(title: string, images: ThumbnailImage[], columns: nu
   .circle {
     width: ${circleSize}px;
     height: ${circleSize}px;
-    border-radius: 50%;
+    border-radius: 12px;
     background-size: cover;
     background-position: center;
-    border: 4px solid #e0e0e0;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+    border: 3px solid #d0d0d0;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   }
 
   .label {
-    color: #333333;
+    color: #222222;
     font-size: ${fontSize}px;
     font-weight: 700;
     text-align: center;
